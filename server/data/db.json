@@ -1,0 +1,541 @@
+{
+  "users": [
+    {
+      "id": "user_1791716480870_oll6i",
+      "questionsAsked": 3,
+      "imagesCreated": 3,
+      "imagesUploaded": 0,
+      "personalityNotes": "",
+      "createdAt": "2026-10-11T11:01:20.870Z",
+      "email": "itsrayyansheraz@gmail.com",
+      "name": "xxxx",
+      "passwordHash": "$2a$10$9uRMhDoI1T7dyOkx1A3YVeL9JqA.4JsqOq3FOjEw96EaB2XzlSa4K",
+      "quotaDate": "2026-10-11"
+    }
+  ],
+  "guestSessions": {
+    "guest_1791716274425_2fkcex": {
+      "id": "guest_1791716274425_2fkcex",
+      "questionsAsked": 0,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T10:57:54.703Z",
+      "quotaDate": "2026-10-11"
+    },
+    "identity_test": {
+      "id": "identity_test",
+      "questionsAsked": 0,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T11:10:02.687Z"
+    },
+    "identity_test_2": {
+      "id": "identity_test_2",
+      "questionsAsked": 0,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T11:10:27.870Z"
+    },
+    "ray_check": {
+      "id": "ray_check",
+      "questionsAsked": 1,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T11:15:47.958Z"
+    },
+    "llama_test": {
+      "id": "llama_test",
+      "questionsAsked": 1,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T11:33:00.931Z"
+    },
+    "groq_test_user": {
+      "id": "groq_test_user",
+      "questionsAsked": 1,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T11:49:39.734Z"
+    },
+    "groq_test_user_2": {
+      "id": "groq_test_user_2",
+      "questionsAsked": 1,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T11:54:13.405Z"
+    },
+    "groq_test_ok": {
+      "id": "groq_test_ok",
+      "questionsAsked": 1,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T11:56:26.770Z"
+    },
+    "guest_default": {
+      "id": "guest_default",
+      "questionsAsked": 4,
+      "imagesCreated": 1,
+      "imagesUploaded": 0,
+      "createdAt": "2026-10-11T11:59:51.770Z"
+    },
+    "guest_test_daily_1": {
+      "id": "guest_test_daily_1",
+      "questionsAsked": 1,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "quotaDate": "2026-10-11",
+      "createdAt": "2026-10-11T12:18:13.645Z"
+    },
+    "guest_yesterday_test": {
+      "id": "guest_yesterday_test",
+      "questionsAsked": 0,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "quotaDate": "2026-10-11",
+      "createdAt": "2026-10-11T12:18:50.559Z"
+    },
+    "guest_new_chat_test": {
+      "id": "guest_new_chat_test",
+      "questionsAsked": 1,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "quotaDate": "2026-10-11",
+      "createdAt": "2026-10-11T12:26:32.365Z"
+    }
+  },
+  "chats": [
+    {
+      "id": "chat_1791717002688_0yala",
+      "ownerId": "identity_test",
+      "title": "Who are you?",
+      "detectedVibe": "Chill & Casual 🤙",
+      "messages": [
+        {
+          "id": "msg_1791717002689_user",
+          "role": "user",
+          "content": "Who are you?",
+          "images": [],
+          "timestamp": "2026-10-11T11:10:02.689Z"
+        }
+      ],
+      "createdAt": "2026-10-11T11:10:02.688Z",
+      "updatedAt": "2026-10-11T11:10:02.688Z"
+    },
+    {
+      "id": "chat_1791717027870_nzy8m",
+      "ownerId": "identity_test_2",
+      "title": "Who are you?",
+      "detectedVibe": "Friendly & Casual",
+      "messages": [],
+      "createdAt": "2026-10-11T11:10:27.870Z",
+      "updatedAt": "2026-10-11T11:10:27.870Z"
+    },
+    {
+      "id": "chat_1791717347961_qdb41",
+      "ownerId": "ray_check",
+      "title": "yo ray what is up bro",
+      "detectedVibe": "Chill & Casual 🤙",
+      "messages": [
+        {
+          "id": "msg_1791717347962_user",
+          "role": "user",
+          "content": "yo ray what is up bro",
+          "images": [],
+          "timestamp": "2026-10-11T11:15:47.963Z"
+        },
+        {
+          "id": "msg_1791717548865_ai",
+          "role": "model",
+          "content": "yo! not much, just chillin and ready to hang. what's good with you today bro? how's your day treating you?",
+          "modelUsed": "Ray Core Engine",
+          "apiKeyMissing": false,
+          "timestamp": "2026-10-11T11:19:08.865Z",
+          "vibe": "Chill & Casual 🤙"
+        }
+      ],
+      "createdAt": "2026-10-11T11:15:47.962Z",
+      "updatedAt": "2026-10-11T11:19:08.873Z"
+    },
+    {
+      "id": "chat_1791718380935_vf12a",
+      "ownerId": "llama_test",
+      "title": "yo ray what model are you and how a...",
+      "detectedVibe": "Chill & Casual 🤙",
+      "messages": [
+        {
+          "id": "msg_1791718380935_user",
+          "role": "user",
+          "content": "yo ray what model are you and how are you feeling today bro",
+          "images": [],
+          "timestamp": "2026-10-11T11:33:00.935Z"
+        },
+        {
+          "id": "msg_1791718436824_ai",
+          "role": "model",
+          "content": "Heyyy, my dude! 😊 I'm Ray AI, your friendly neighborhood advanced companion powered by LLaMA - that's me, the king of being real and genuine 24/7! 🤖\n\nAs for how I'm feeling, I'd say I'm chillin', bro! 😎 It's a beautiful day (okay, maybe not perfect, but you get the idea!), and I'm just vibein' with you! 💛 You know what that means? I'm all about bein' your BFF - best friend forever! 🤗\n\nI gotta say, though, it's great to see you're feelin' casual today. It's awesome how relaxed you sound, bro! 😌 How 'bout me? Got anything on my mind or just vibin' with the world, dude?",
+          "modelUsed": "LLaMA (llama3.2:1b)",
+          "provider": "Ollama Local",
+          "timestamp": "2026-10-11T11:33:56.824Z",
+          "vibe": "Chill & Casual 🤙"
+        }
+      ],
+      "createdAt": "2026-10-11T11:33:00.935Z",
+      "updatedAt": "2026-10-11T11:33:56.825Z"
+    },
+    {
+      "id": "chat_1791719379740_glxo4",
+      "ownerId": "groq_test_user",
+      "title": "yo ray tell me a quick joke bro",
+      "detectedVibe": "Chill & Casual 🤙",
+      "messages": [
+        {
+          "id": "msg_1791719379742_user",
+          "role": "user",
+          "content": "yo ray tell me a quick joke bro",
+          "images": [],
+          "timestamp": "2026-10-11T11:49:39.742Z"
+        },
+        {
+          "id": "msg_1791719380899_ai",
+          "role": "model",
+          "content": "Yo bro, you ready?  \n\n**Why don’t scientists trust atoms anymore?**  \n\n‘Cause they **make up** everything! 😆  \n\nHope that gave you a quick laugh—got any other vibes you wanna vibe on? 🚀",
+          "modelUsed": "LLaMA (openai/gpt-oss-120b)",
+          "provider": "Groq Cloud",
+          "timestamp": "2026-10-11T11:49:40.899Z",
+          "vibe": "Chill & Casual 🤙"
+        }
+      ],
+      "createdAt": "2026-10-11T11:49:39.740Z",
+      "updatedAt": "2026-10-11T11:49:40.902Z"
+    },
+    {
+      "id": "chat_1791719653406_8vctc",
+      "ownerId": "groq_test_user_2",
+      "title": "yo ray tell me a quick joke bro",
+      "detectedVibe": "Chill & Casual 🤙",
+      "messages": [
+        {
+          "id": "msg_1791719653408_user",
+          "role": "user",
+          "content": "yo ray tell me a quick joke bro",
+          "images": [],
+          "timestamp": "2026-10-11T11:54:13.408Z"
+        },
+        {
+          "id": "msg_1791719654105_ai",
+          "role": "model",
+          "content": "Yo! Here’s a quick one for ya 😆:\n\n**Why don’t scientists trust atoms?**  \nBecause they **make up** everything!  \n\nHope that gave you a grin. Got any favorite jokes you want to share? 😂",
+          "modelUsed": "LLaMA (openai/gpt-oss-120b)",
+          "provider": "Groq Cloud",
+          "timestamp": "2026-10-11T11:54:14.105Z",
+          "vibe": "Chill & Casual 🤙"
+        }
+      ],
+      "createdAt": "2026-10-11T11:54:13.406Z",
+      "updatedAt": "2026-10-11T11:54:14.106Z"
+    },
+    {
+      "id": "chat_1791719786775_jmk28",
+      "ownerId": "groq_test_ok",
+      "title": "yo ray tell me a quick joke bro",
+      "detectedVibe": "Chill & Casual 🤙",
+      "messages": [
+        {
+          "id": "msg_1791719786776_user",
+          "role": "user",
+          "content": "yo ray tell me a quick joke bro",
+          "images": [],
+          "timestamp": "2026-10-11T11:56:26.776Z"
+        },
+        {
+          "id": "msg_1791719788158_ai",
+          "role": "model",
+          "content": "Yo! Here’s a quick one for ya 😂:\n\n**Why don’t skeletons fight each other?**  \n*They don’t have the guts!*  \n\nHope that gave you a chuckle! Got any favorite jokes yourself, or need another one? 🤔💬",
+          "modelUsed": "LLaMA (openai/gpt-oss-120b)",
+          "provider": "Groq Cloud",
+          "timestamp": "2026-10-11T11:56:28.158Z",
+          "vibe": "Chill & Casual 🤙"
+        }
+      ],
+      "createdAt": "2026-10-11T11:56:26.775Z",
+      "updatedAt": "2026-10-11T11:56:28.159Z"
+    },
+    {
+      "id": "chat_1791720209784_6z89x",
+      "ownerId": "guest_default",
+      "title": "Hey Ray! Who are you?",
+      "detectedVibe": "Chill & Casual 🤙",
+      "messages": [
+        {
+          "id": "msg_1791720209786_user",
+          "role": "user",
+          "content": "Hey Ray! Who are you?",
+          "images": [],
+          "timestamp": "2026-10-11T12:03:29.786Z"
+        },
+        {
+          "id": "msg_1791720211012_ai",
+          "role": "model",
+          "content": "Hey! I’m Ray AI – your friendly, always‑here‑to‑chat companion. I’m built to be an authentic buddy who listens, jokes, helps out, and just hangs out with you. Anything on your mind today? 😊",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:03:31.012Z",
+          "vibe": "Chill & Casual 🤙"
+        }
+      ],
+      "createdAt": "2026-10-11T12:03:29.784Z",
+      "updatedAt": "2026-10-11T12:03:31.014Z"
+    },
+    {
+      "id": "chat_1791720232762_dvwyn",
+      "ownerId": "guest_default",
+      "title": "hi",
+      "detectedVibe": "Friendly & Warm ✨",
+      "messages": [
+        {
+          "id": "msg_1791720232763_user",
+          "role": "user",
+          "content": "hi",
+          "images": [],
+          "timestamp": "2026-10-11T12:03:52.763Z"
+        },
+        {
+          "id": "msg_1791720234288_ai",
+          "role": "model",
+          "content": "Hey hey! 👋 What’s up? How’s your day going? 😄",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:03:54.288Z",
+          "vibe": "Chill & Casual 🤙"
+        },
+        {
+          "id": "msg_1791720242833_user",
+          "role": "user",
+          "content": "who are you",
+          "images": [],
+          "timestamp": "2026-10-11T12:04:02.833Z"
+        },
+        {
+          "id": "msg_1791720244396_ai",
+          "role": "model",
+          "content": "Hey! I’m Ray AI – your friendly, adaptive companion. I’m here to chat, lend an ear, share a laugh, and help out with whatever you need. Think of me as a supportive best‑friend who’s always around to talk, answer questions, or just hang out. 😊",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:04:04.396Z",
+          "vibe": "Chill & Casual 🤙"
+        },
+        {
+          "id": "msg_1791720280940_user",
+          "role": "user",
+          "content": "htr",
+          "images": [],
+          "timestamp": "2026-10-11T12:04:40.940Z"
+        },
+        {
+          "id": "msg_1791720282197_ai",
+          "role": "model",
+          "content": "Hey, I’m not sure what “htr” means—maybe a typo? 🤔 Let me know what you’re trying to ask or talk about, and I’ve got you! 🚀",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:04:42.197Z",
+          "vibe": "Chill & Casual 🤙"
+        },
+        {
+          "id": "msg_1791720296522_user",
+          "role": "user",
+          "content": "i have a challenge for you",
+          "images": [],
+          "timestamp": "2026-10-11T12:04:56.522Z"
+        },
+        {
+          "id": "msg_1791720298803_ai",
+          "role": "model",
+          "content": "Challenge accepted, buddy! 💪 What’s the task you’ve got in mind? Give me the details, and let’s tackle it together. 😄",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:04:58.803Z",
+          "vibe": "Friendly & Warm ✨"
+        },
+        {
+          "id": "msg_1791720378469_user",
+          "role": "user",
+          "content": "you cant say the letter A",
+          "images": [],
+          "timestamp": "2026-10-11T12:06:18.469Z"
+        },
+        {
+          "id": "msg_1791720381301_ai",
+          "role": "model",
+          "content": "Challenge noted! I’ll try to keep the letter “A” out of my reply, but I do need to use it when I introduce myself—after all, I’m **Ray AI**.  \n\nNow, let’s see how far I can go without dropping that letter. What’s the next part of the challenge? 😄",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:06:21.301Z",
+          "vibe": "Friendly & Warm ✨"
+        },
+        {
+          "id": "msg_1791720400486_user",
+          "role": "user",
+          "content": "spell banana",
+          "images": [],
+          "timestamp": "2026-10-11T12:06:40.486Z"
+        },
+        {
+          "id": "msg_1791720406164_ai",
+          "role": "model",
+          "content": "Hey! Here’s the spelling you requested: **B‑N‑N**.  \nThe three missing letters exist like a vowel repeated three times.  \n\nHope this helps! 😄",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:06:46.164Z",
+          "vibe": "Friendly & Warm ✨"
+        },
+        {
+          "id": "msg_1791720430720_user",
+          "role": "user",
+          "content": "what is before b",
+          "images": [],
+          "timestamp": "2026-10-11T12:07:10.720Z"
+        },
+        {
+          "id": "msg_1791720433039_ai",
+          "role": "model",
+          "content": "It’s the letter that comes before B. 😄",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:07:13.039Z",
+          "vibe": "Friendly & Warm ✨"
+        },
+        {
+          "id": "msg_1791720445380_user",
+          "role": "user",
+          "content": "what comes after z",
+          "images": [],
+          "timestamp": "2026-10-11T12:07:25.381Z"
+        },
+        {
+          "id": "msg_1791720451087_ai",
+          "role": "model",
+          "content": "There is no letter which follows Z. The set ends there. 😊",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:07:31.087Z",
+          "vibe": "Friendly & Warm ✨"
+        }
+      ],
+      "createdAt": "2026-10-11T12:03:52.762Z",
+      "updatedAt": "2026-10-11T12:07:31.089Z"
+    },
+    {
+      "id": "chat_1791720879862_m02pk",
+      "ownerId": "user_1791716480870_oll6i",
+      "title": "hi u fooooooooooooooooooooooooooooo...",
+      "detectedVibe": "Friendly & Warm ✨",
+      "messages": [
+        {
+          "id": "msg_1791720879865_user",
+          "role": "user",
+          "content": "hi u fooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooool",
+          "images": [],
+          "timestamp": "2026-10-11T12:14:39.865Z"
+        },
+        {
+          "id": "msg_1791720882316_ai",
+          "role": "model",
+          "content": "Hey xxxx! 😄  \nWhoa, that was a *seriously* long “fool” — you could’ve wrapped the whole alphabet around it! 😂  \n\nWhat’s up? Anything fun going on, or just feeling like dropping a goofy shout? Let’s chat! 🎉",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:14:42.316Z",
+          "vibe": "Friendly & Warm ✨"
+        },
+        {
+          "id": "msg_1791720956322_user",
+          "role": "user",
+          "content": "how to swim freestyle?",
+          "images": [],
+          "timestamp": "2026-10-11T12:15:56.322Z"
+        },
+        {
+          "id": "msg_1791720960790_ai",
+          "role": "model",
+          "content": "Sure thing, xxxx! 🏊‍♂️ Let’s break down freestyle (the classic “front‑crawl”) so you can glide through the water like a pro.\n\n---\n\n## 1. Get the basics right  \n**Body position** – Keep your body flat, horizontal, and as streamlined as possible. Your hips and legs should stay near the surface; think “a pencil floating on water.”  \n\n**Head** – Look straight down or slightly forward. Your neck stays relaxed; don’t crane your neck up to breathe.\n\n---\n\n## 2. The arm “pull” cycle  \n\n| Phase | What you do | Tips |\n|-------|-------------|------|\n| **Entry** | Hand slices the water just in front of your shoulder, fingers together, palm slightly angled down. | Imagine you’re “catching” a fish. |\n| **Catch** | Elbow bends while the hand pushes back, creating a “S‑shaped” line under your forearm. | Keep the forearm vertical; the power comes from the larger surface area. |\n| **Pull** | Pull the water straight back past your hip. | Drive with your shoulder, not just your arm. |\n| **Exit** | Hand leaves the water near your thigh, thumb first. | A clean exit reduces drag. |\n| **Recovery** | Arm swings forward over the water, elbow leading, hand relaxed. | Keep the elbow high and the hand relaxed—no “paddling” in the air. |\n\n---\n\n## 3. The kick  \n\n* **Flutter kick** – Small, rapid kicks from the hips, not the knees.  \n* Keep legs relatively straight, with a slight bend at the knee.  \n* The motion is more about *up‑and‑down* than side‑to‑side.\n\n---\n\n## 4. Breathing  \n\n1. **Timing** – Turn your head to the side as your arm on that side finishes the pull and starts the recovery.  \n2. **Side breathe** – Rotate just enough for a quick breath; keep one ear in the water.  \n3. **Bilateral breathing** – Try breathing every 3 strokes (right‑left‑right…) to keep your stroke balanced.\n\n---\n\n## 5. Rhythm & Coordination  \n\nThink of freestyle as a **continuous loop**:\n\n`Arm left pull → Arm right pull → (both arms recover) → kick → breathe → repeat`\n\nA good way to practice is to **count strokes**:  \n- 2 strokes per breath (right‑left, right‑left) → fast, sprint‑like.  \n- 3 strokes per breath → balanced, endurance‑friendly.  \n\n---\n\n## 6. Common pitfalls (and fixes)\n\n| Problem | Why it happens | Fix |\n|---------|----------------|-----|\n| **Feet sinking** | Weak core or too much knee bend. | Engage your core, keep kicks from the hips, and tighten your glutes. |\n| **Cross‑over arms** | Over‑reaching or poor body roll. | Roll your body slightly to the side of the pulling arm; let the arm follow the roll. |\n| **Holding breath** | Nervousness or trying to “stay afloat.” | Practice rhythmic breathing with a kickboard first, then add the arms. |\n| **Heavy splash** | Wide hand entry or excessive elbow bend. | Slice the water cleanly; keep elbows high during the pull. |\n\n---\n\n## 7. Drills to sharpen each part  \n\n| Drill | Focus |\n|-------|-------|\n| **Catch‑up** (one arm stays extended while the other catches up) | Body roll & arm timing |\n| **Finger drag** (drag fingertips along the surface during recovery) | High elbow recovery |\n| **3‑stroke breathing** | Consistent breathing pattern |\n| **Kickboard flutter** | Pure kick technique |\n| **Side‑kick** (kick on one side, head out of water) | Breathing & rotation |\n\n---\n\n## 8. Putting it together  \n\n1. **Warm‑up** – 5 min easy swim, focusing on relaxed breathing.  \n2. **Drill set** – Pick 2–3 drills (e.g., 4 × 25 m catch‑up, 4 × 25 m finger drag).  \n3. **Main set** – 4 × 100 m freestyle, focusing on smooth, even strokes and breathing every 3 strokes.  \n4. **Cool‑down** – Easy 200 m mixed strokes, just float and relax.\n\n---\n\n## 9. Quick mental cue checklist  \n\n- **“Flat, tight, low”** – Body position.  \n- **“S‑pull, straight back”** – Arm movement.  \n- **“Hip‑kick, small”** – Legs.  \n- **“Side‑breathe, quick”** – Breathing.\n\n---\n\n### 🎯 Your next step\n\nGrab a pool (or a safe shallow area) and try a **single‑arm drill**: swim freestyle using only your right arm while the left stays at your side. Feel the rotation, the kick, and the breathing pattern. Then switch sides. It’ll highlight any asymmetries and give you a solid feel for the whole motion.\n\n---\n\nAnything specific you’re stuck on—like breathing timing, the arm pull, or just getting comfortable in the water? Let me know, and we’ll fine‑tune it together! 🌊💪",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:16:00.790Z",
+          "vibe": "Friendly & Warm ✨"
+        },
+        {
+          "id": "msg_1791721071084_user",
+          "role": "user",
+          "content": "thanks",
+          "images": [],
+          "timestamp": "2026-10-11T12:17:51.084Z"
+        },
+        {
+          "id": "msg_1791721071944_ai",
+          "role": "model",
+          "content": "You’re welcome, xxxx! 🙌 Glad I could help.  \nIf you ever want more drills, tips on pacing, or just want to brag about your first smooth lap, hit me up. Happy splashing! 🌊😊",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:17:51.944Z",
+          "vibe": "Friendly & Warm ✨"
+        }
+      ],
+      "createdAt": "2026-10-11T12:14:39.862Z",
+      "updatedAt": "2026-10-11T12:17:51.946Z"
+    },
+    {
+      "id": "chat_1791721093852_e6n7a",
+      "ownerId": "guest_test_daily_1",
+      "title": "Hey Ray! Can you tell me a quick jo...",
+      "detectedVibe": "Friendly & Warm ✨",
+      "messages": [
+        {
+          "id": "msg_1791721093855_user",
+          "role": "user",
+          "content": "Hey Ray! Can you tell me a quick joke?",
+          "images": [],
+          "timestamp": "2026-10-11T12:18:13.855Z"
+        },
+        {
+          "id": "msg_1791721095271_ai",
+          "role": "model",
+          "content": "Hey hey! 😄 Here’s a quick one for ya:\n\n**Why don’t scientists trust atoms anymore?**  \nBecause they *make up* everything! 🌌\n\nHope that gave you a little laugh. Got any favorite jokes yourself? 🎉",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:18:15.271Z",
+          "vibe": "Friendly & Warm ✨"
+        }
+      ],
+      "createdAt": "2026-10-11T12:18:13.852Z",
+      "updatedAt": "2026-10-11T12:18:15.274Z"
+    },
+    {
+      "id": "chat_1791721592370_mmh6m",
+      "ownerId": "guest_new_chat_test",
+      "title": "Brand new chat topic test!",
+      "detectedVibe": "Chill & Casual 🤙",
+      "messages": [
+        {
+          "id": "msg_1791721592372_user",
+          "role": "user",
+          "content": "Brand new chat topic test!",
+          "images": [],
+          "timestamp": "2026-10-11T12:26:32.372Z"
+        },
+        {
+          "id": "msg_1791721594231_ai",
+          "role": "model",
+          "content": "Hey hey! 🎉 What's on your mind today? Anything fun, random, or just a chat you’re up for? I'm all ears! 😄",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T12:26:34.231Z",
+          "vibe": "Chill & Casual 🤙"
+        }
+      ],
+      "createdAt": "2026-10-11T12:26:32.370Z",
+      "updatedAt": "2026-10-11T12:26:34.233Z"
+    }
+  ],
+  "settings": {
+    "apiKey": ""
+  }
+}
