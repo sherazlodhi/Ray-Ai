@@ -9,9 +9,10 @@ import {
   ShieldCheck, 
   Image as ImageIcon, 
   Upload, 
-  Infinity as InfinityIcon,
+  Infinity as InfinityIcon, 
   HelpCircle,
-  Key
+  Key,
+  X
 } from 'lucide-react';
 
 export default function Sidebar({
@@ -24,6 +25,7 @@ export default function Sidebar({
   onDeleteChat,
   userStats,
   user,
+  device,
   onOpenAuth,
   onLogout,
   onOpenImageGen,
@@ -47,13 +49,13 @@ export default function Sidebar({
       {/* Sidebar container */}
       <aside className={`
         fixed lg:static top-0 bottom-0 left-0 z-40
-        w-72 bg-[#1e1f20] border-r border-[#333537]
+        w-[84vw] max-w-[320px] sm:w-72 bg-[#1e1f20] border-r border-[#333537]
         flex flex-col justify-between
-        transition-transform duration-300 ease-in-out
+        transition-transform duration-300 ease-in-out shadow-2xl lg:shadow-none
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
         {/* Top Header & New Chat */}
-        <div className="p-4 flex flex-col gap-4">
+        <div className="p-3.5 sm:p-4 flex flex-col gap-3.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 via-indigo-500 to-pink-500 p-0.5 flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -65,6 +67,16 @@ export default function Sidebar({
                 Ray <span className="gemini-gradient-text">AI</span>
               </span>
             </div>
+
+            {/* Mobile Close Button */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-[#282a2c] lg:hidden transition-colors"
+              title="Close menu"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
 
           {/* New Chat Button */}
@@ -130,7 +142,10 @@ export default function Sidebar({
         </div>
 
         {/* Limits & Status Panel */}
-        <div className="p-3 border-t border-[#333537] bg-[#1a1b1c] space-y-3">
+        <div 
+          className="p-3 border-t border-[#333537] bg-[#1a1b1c] space-y-3"
+          style={{ paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom, 0.75rem))' }}
+        >
           {/* Question Limit Widget */}
           <div className="bg-[#242628] rounded-xl p-3 border border-[#333537] text-xs space-y-2">
             <div className="flex items-center justify-between font-medium">

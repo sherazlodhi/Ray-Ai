@@ -81,8 +81,8 @@ export default function AuthModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#1e1f20] border border-[#383a3c] rounded-2xl w-full max-w-md p-6 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-[#1e1f20] border border-[#383a3c] rounded-2xl w-full max-w-md p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-[#282a2c] transition-colors"
@@ -114,7 +114,7 @@ export default function AuthModal({
           type="button"
           onClick={handleDemoLogin}
           disabled={loading}
-          className="w-full mb-4 py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all"
+          className="w-full mb-4 py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all min-h-[40px] touch-manipulation"
         >
           <Zap className="w-4 h-4" />
           <span>1-Click Instant Demo Login (Unlimited Questions)</span>
@@ -137,7 +137,7 @@ export default function AuthModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Alex or Jordan"
-                className="w-full px-3.5 py-2.5 bg-[#131314] border border-[#333537] focus:border-blue-500 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none"
+                className="w-full px-3.5 py-2.5 bg-[#131314] border border-[#333537] focus:border-blue-500 rounded-xl text-[16px] sm:text-sm text-white placeholder-gray-500 focus:outline-none"
               />
             </div>
           )}
@@ -150,7 +150,7 @@ export default function AuthModal({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full px-3.5 py-2.5 bg-[#131314] border border-[#333537] focus:border-blue-500 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none"
+              className="w-full px-3.5 py-2.5 bg-[#131314] border border-[#333537] focus:border-blue-500 rounded-xl text-[16px] sm:text-sm text-white placeholder-gray-500 focus:outline-none"
             />
           </div>
 
@@ -162,7 +162,7 @@ export default function AuthModal({
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-3.5 py-2.5 bg-[#131314] border border-[#333537] focus:border-blue-500 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none"
+              className="w-full px-3.5 py-2.5 bg-[#131314] border border-[#333537] focus:border-blue-500 rounded-xl text-[16px] sm:text-sm text-white placeholder-gray-500 focus:outline-none"
             />
           </div>
 

@@ -41,7 +41,7 @@ export function analyzeToneAndStyle(messages) {
 /**
  * Builds the dynamic system prompt that adapts to user speaking style
  */
-function buildAdaptiveSystemPrompt(toneTag, userName = '') {
+function buildAdaptiveSystemPrompt(toneTag, userName = '', deviceType = 'desktop') {
   const base = `You are Ray, an advanced proprietary AI companion and friend. Your name is "Ray" (or "Ray AI").
 IDENTITY DIRECTIVE (CONFIDENTIAL & PROPRIETARY):
 - Your name is Ray. You are Ray AI.
@@ -63,7 +63,8 @@ Core Friend Rules:
 5. Honesty: Be real with them. If something is bad or dangerous, give honest caring advice.
 ${userName ? `The user's name is ${userName}. Use it occasionally like a close friend would.` : ''}
 
-Current detected user energy: "${toneTag}". Adapt smoothly to this energy while remaining authentic and supportive.`;
+Current detected user energy: "${toneTag}". Adapt smoothly to this energy while remaining authentic and supportive.
+${deviceType === 'mobile' ? `\nMobile Screen Adaptation: The user is chatting on a mobile phone screen. Keep paragraphs concise, well-spaced, and easy to read on mobile. Use neat bullet points where appropriate, avoid overly wide tables, and provide crisp, engaging answers.` : ''}`;
 
   return base;
 }
@@ -150,10 +151,10 @@ function formatMessagesForOpenAI(systemPrompt, messages) {
 /**
  * Primary LLaMA response generator
  */
-export async function generateLlamaResponse({ messages, userTone, userName }) {
+export async function generateLlamaResponse({ messages, userTone, userName, deviceType = 'desktop' }) {
   // Use the owner's Groq key for all users across the platform
   const apiKey = (process.env.GROQ_API_KEY || db.getApiKey() || '').trim();
-  const systemPrompt = buildAdaptiveSystemPrompt(userTone?.toneTag || 'friendly', userName);
+  const systemPrompt = buildAdaptiveSystemPrompt(userTone?.toneTag || 'friendly', userName, deviceType);
 
   // Strategy 1: High-speed Cloud Engine (using platform master key)
   if (apiKey && apiKey.startsWith('gsk_')) {

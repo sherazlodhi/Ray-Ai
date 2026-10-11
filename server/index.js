@@ -276,11 +276,24 @@ app.post('/api/chat', async (req, res) => {
     const userTone = analyzeToneAndStyle(chat.messages);
     chat.detectedVibe = userTone.vibe;
 
+    // Device detection (User-Agent header + optional client payload)
+    const ua = req.headers['user-agent'] || '';
+    const isMobileUA = /Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    const isTabletUA = /iPad|Tablet|PlayBook|Silk/i.test(ua);
+    const clientDevice = req.body?.deviceType;
+    let deviceType = clientDevice;
+    if (!deviceType) {
+      if (isMobileUA) deviceType = 'mobile';
+      else if (isTabletUA) deviceType = 'tablet';
+      else deviceType = 'desktop';
+    }
+
     // Call LLaMA Engine (Local Ollama or Cloud)
     const llamaResult = await generateLlamaResponse({
       messages: chat.messages,
       userTone,
-      userName: identity.isAuth ? identity.name : ''
+      userName: identity.isAuth ? identity.name : '',
+      deviceType
     });
 
     // Append AI response

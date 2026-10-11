@@ -7,6 +7,7 @@ import AuthModal from './components/AuthModal.jsx';
 import ImageGenModal from './components/ImageGenModal.jsx';
 import LimitModal from './components/LimitModal.jsx';
 import { X } from 'lucide-react';
+import { useDevice } from './utils/useDevice.js';
 
 function getOrSetGuestId() {
   let gid = localStorage.getItem('ray_guest_id') || localStorage.getItem('gemini_guest_id');
@@ -18,6 +19,7 @@ function getOrSetGuestId() {
 }
 
 export default function App() {
+  const device = useDevice();
   const [guestId] = useState(getOrSetGuestId);
   const [token, setToken] = useState(() => localStorage.getItem('ray_auth_token') || localStorage.getItem('gemini_auth_token') || '');
   const [user, setUser] = useState(() => {
@@ -177,7 +179,8 @@ export default function App() {
         body: JSON.stringify({
           chatId: currentChatId,
           message: text,
-          images
+          images,
+          deviceType: device.deviceType
         })
       });
 
@@ -325,7 +328,7 @@ export default function App() {
   };
 
   return (
-    <div className="flex h-screen bg-[#131314] text-[#e3e3e3] overflow-hidden">
+    <div className="flex h-full h-[100dvh] max-h-[100dvh] w-full bg-[#131314] text-[#e3e3e3] overflow-hidden overscroll-none">
       {/* Sidebar */}
       <Sidebar
         isOpen={sidebarOpen}
@@ -337,6 +340,7 @@ export default function App() {
         onDeleteChat={handleDeleteChat}
         userStats={userStats}
         user={user}
+        device={device}
         onOpenAuth={(mode) => setAuthModal({ open: true, mode })}
         onLogout={handleLogout}
         onOpenImageGen={() => setImageGenModalOpen(true)}
@@ -344,11 +348,12 @@ export default function App() {
       />
 
       {/* Main Chat Interface */}
-      <div className="flex-1 flex flex-col min-w-0 h-full relative">
+      <div className="flex-1 flex flex-col min-w-0 h-full relative overflow-hidden">
         <Navbar
           onToggleSidebar={() => setSidebarOpen(prev => !prev)}
           detectedVibe={currentChat.detectedVibe}
           user={user}
+          device={device}
           onOpenAuth={(mode) => setAuthModal({ open: true, mode })}
           onNewChat={handleNewChat}
           onLogout={handleLogout}
@@ -358,6 +363,7 @@ export default function App() {
           messages={currentChat.messages || []}
           detectedVibe={currentChat.detectedVibe}
           isGenerating={isGenerating}
+          device={device}
           onSelectSuggestion={(sug) => handleSendMessage(sug)}
           onOpenImageGen={() => setImageGenModalOpen(true)}
           userStats={userStats}
@@ -372,6 +378,7 @@ export default function App() {
           onOpenImageGen={() => setImageGenModalOpen(true)}
           userStats={userStats}
           user={user}
+          device={device}
           disabled={isGenerating}
           onLimitExceeded={(type) => setLimitModal({ open: true, type })}
         />

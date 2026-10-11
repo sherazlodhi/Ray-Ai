@@ -7,8 +7,8 @@
       "imagesUploaded": 0,
       "personalityNotes": "",
       "createdAt": "2026-10-11T11:01:20.870Z",
-      "email": "itsrayyansheraz@gmail.com",
-      "name": "xxxx",
+      "email": "demo@example.com",
+      "name": "Friend",
       "passwordHash": "$2a$10$9uRMhDoI1T7dyOkx1A3YVeL9JqA.4JsqOq3FOjEw96EaB2XzlSa4K",
       "quotaDate": "2026-10-11"
     }
@@ -101,6 +101,22 @@
       "imagesUploaded": 0,
       "quotaDate": "2026-10-11",
       "createdAt": "2026-10-11T12:26:32.365Z"
+    },
+    "guest_1791731871697_7wd4lm": {
+      "id": "guest_1791731871697_7wd4lm",
+      "questionsAsked": 0,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "quotaDate": "2026-10-11",
+      "createdAt": "2026-10-11T15:17:51.868Z"
+    },
+    "guest_test": {
+      "id": "guest_test",
+      "questionsAsked": 1,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "quotaDate": "2026-10-11",
+      "createdAt": "2026-10-11T16:11:44.003Z"
     }
   },
   "chats": [
@@ -533,6 +549,32 @@
       ],
       "createdAt": "2026-10-11T12:26:32.370Z",
       "updatedAt": "2026-10-11T12:26:34.233Z"
+    },
+    {
+      "id": "chat_1791735324236_bk26f",
+      "ownerId": "guest_test",
+      "title": "Hey Ray! Testing mobile format",
+      "detectedVibe": "Friendly & Warm ✨",
+      "messages": [
+        {
+          "id": "msg_1791735324237_user",
+          "role": "user",
+          "content": "Hey Ray! Testing mobile format",
+          "images": [],
+          "timestamp": "2026-10-11T16:15:24.237Z"
+        },
+        {
+          "id": "msg_1791735325572_ai",
+          "role": "model",
+          "content": "Hey hey! 👋  \nLooks like the mobile vibes are coming through just fine. How’s it going on your end? Anything fun you wanna try out while we’re testing? \n\n- 📱 Quick chat\n- 🎨 Image stuff (feel free to drop a pic!)\n- 🤓 Any questions—tech, life, memes—I'm here.\n\nJust hit me up with whatever you’re curious about! 🌟",
+          "modelUsed": "Ray Intelligence v2.5",
+          "provider": "Ray Cloud Core",
+          "timestamp": "2026-10-11T16:15:25.572Z",
+          "vibe": "Friendly & Warm ✨"
+        }
+      ],
+      "createdAt": "2026-10-11T16:15:24.236Z",
+      "updatedAt": "2026-10-11T16:15:25.573Z"
     }
   ],
   "settings": {

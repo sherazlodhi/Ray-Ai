@@ -43,6 +43,7 @@ export default function ChatArea({
   messages = [],
   detectedVibe,
   isGenerating,
+  device,
   onSelectSuggestion,
   onOpenImageGen,
   userStats,
@@ -67,39 +68,39 @@ export default function ChatArea({
   const isAuth = !!user;
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-6 md:px-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="flex-1 overflow-y-auto px-2.5 sm:px-4 py-3 sm:py-6 md:px-8 select-text overscroll-contain">
+      <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6">
         {/* Empty State / Welcome Hero */}
         {messages.length === 0 ? (
-          <div className="py-8 md:py-14 flex flex-col items-center text-center">
+          <div className="py-6 sm:py-8 md:py-14 flex flex-col items-center text-center px-1">
             {/* Sparkle Logo */}
-            <div className="w-16 h-16 md:w-20 md:h-20 rounded-3xl bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-1 mb-6 shadow-xl shadow-blue-500/20 animate-pulse-subtle">
-              <div className="w-full h-full bg-[#1e1f20] rounded-[22px] flex items-center justify-center">
-                <Sparkles className="w-8 h-8 md:w-10 md:h-10 text-blue-400" />
+            <div className="w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-2xl sm:rounded-3xl bg-gradient-to-tr from-blue-500 via-purple-500 to-pink-500 p-1 mb-4 sm:mb-6 shadow-xl shadow-blue-500/20 animate-pulse-subtle">
+              <div className="w-full h-full bg-[#1e1f20] rounded-[14px] sm:rounded-[22px] flex items-center justify-center">
+                <Sparkles className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 text-blue-400" />
               </div>
             </div>
 
-            <h1 className="text-3xl md:text-5xl font-bold font-['Outfit'] mb-3 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold font-['Outfit'] mb-2 sm:mb-3 tracking-tight">
               Meet <span className="gemini-gradient-text">Ray AI</span>
             </h1>
 
-            <p className="text-gray-400 text-sm md:text-base max-w-xl mb-6 leading-relaxed">
+            <p className="text-gray-400 text-xs sm:text-sm md:text-base max-w-xl mb-5 sm:mb-6 leading-relaxed">
               Your adaptive AI companion and friend. I listen, learn how you talk, joke around, give advice, and match your exact vibe!
             </p>
 
             {/* Feature Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-2 mb-10 max-w-lg">
-              <span className="px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-medium text-blue-300">
-                ⚡ 4 Free Guest Questions / Day (Resets Daily)
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-10 max-w-lg">
+              <span className="px-2.5 sm:px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[11px] sm:text-xs font-medium text-blue-300">
+                ⚡ 4 Free Guest Questions / Day
               </span>
-              <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-medium text-emerald-300">
+              <span className="px-2.5 sm:px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] sm:text-xs font-medium text-emerald-300">
                 ✨ Unlimited with Free Sign In
               </span>
-              <span className="px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-xs font-medium text-purple-300">
-                🎨 5 AI Image Creations / Day (Resets Daily)
+              <span className="px-2.5 sm:px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-[11px] sm:text-xs font-medium text-purple-300">
+                🎨 5 AI Image Creations / Day
               </span>
-              <span className="px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-xs font-medium text-teal-300">
-                📷 5 Photo Uploads / Day (Resets Daily)
+              <span className="px-2.5 sm:px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-[11px] sm:text-xs font-medium text-teal-300">
+                📷 5 Photo Uploads / Day
               </span>
             </div>
 
@@ -146,21 +147,21 @@ export default function ChatArea({
             return (
               <div
                 key={msg.id}
-                className={`flex gap-3.5 md:gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}
+                className={`flex gap-2 sm:gap-3.5 md:gap-4 ${isUser ? 'justify-end' : 'justify-start'}`}
               >
                 {/* AI Avatar */}
                 {!isUser && (
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-600 p-0.5 flex-shrink-0 shadow-md">
-                    <div className="w-full h-full bg-[#1e1f20] rounded-[10px] flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-blue-400" />
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-gradient-to-tr from-blue-500 via-indigo-500 to-purple-600 p-0.5 flex-shrink-0 shadow-md self-start mt-0.5">
+                    <div className="w-full h-full bg-[#1e1f20] rounded-[7px] sm:rounded-[10px] flex items-center justify-center">
+                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-blue-400" />
                     </div>
                   </div>
                 )}
 
                 {/* Message Bubble Container */}
-                <div className={`flex flex-col max-w-[85%] md:max-w-[78%] ${isUser ? 'items-end' : 'items-start'}`}>
+                <div className={`flex flex-col max-w-[92%] sm:max-w-[85%] md:max-w-[78%] ${isUser ? 'items-end' : 'items-start'}`}>
                   {/* Message Meta / Subtitle */}
-                  <div className="flex items-center gap-2 mb-1 px-1">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mb-1 px-1">
                     <span className="text-[11px] font-medium text-gray-400">
                       {isUser ? (user?.name || 'You') : 'Ray'}
                     </span>
@@ -173,7 +174,7 @@ export default function ChatArea({
 
                   {/* Bubble Content */}
                   <div
-                    className={`rounded-2xl p-4 text-sm leading-relaxed ${
+                    className={`rounded-2xl p-3 sm:p-4 text-sm sm:text-[15px] leading-relaxed break-words overflow-hidden ${
                       isUser
                         ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-tr-none shadow-md'
                         : 'bg-[#1e1f20] border border-[#333537] text-gray-100 rounded-tl-none shadow-sm'
@@ -272,8 +273,8 @@ export default function ChatArea({
 
                 {/* User Avatar */}
                 {isUser && (
-                  <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0 shadow-md">
-                    {user?.name ? user.name[0].toUpperCase() : <User className="w-4 h-4" />}
+                  <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl bg-blue-600 flex items-center justify-center text-xs font-bold text-white flex-shrink-0 shadow-md self-start mt-0.5">
+                    {user?.name ? user.name[0].toUpperCase() : <User className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
                   </div>
                 )}
               </div>

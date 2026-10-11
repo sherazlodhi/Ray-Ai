@@ -51,8 +51,8 @@ export default function ImageGenModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
-      <div className="bg-[#1e1f20] border border-[#383a3c] rounded-2xl w-full max-w-lg p-6 shadow-2xl relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
+      <div className="bg-[#1e1f20] border border-[#383a3c] rounded-2xl w-full max-w-lg p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-white rounded-lg hover:bg-[#282a2c] transition-colors"
@@ -95,7 +95,7 @@ export default function ImageGenModal({
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               placeholder="e.g. A cute robotic cat having coffee in a rainy Tokyo street at sunset..."
-              className="w-full px-3.5 py-2.5 bg-[#131314] border border-[#333537] focus:border-purple-500 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none resize-none"
+              className="w-full px-3.5 py-2.5 bg-[#131314] border border-[#333537] focus:border-purple-500 rounded-xl text-[16px] sm:text-sm text-white placeholder-gray-500 focus:outline-none resize-none"
             />
           </div>
 
