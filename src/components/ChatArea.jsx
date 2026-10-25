@@ -13,7 +13,10 @@ import {
   Zap, 
   ImageIcon, 
   HelpCircle,
-  Eye
+  Eye,
+  Video,
+  Crown,
+  Film
 } from 'lucide-react';
 
 const SUGGESTIONS = [
@@ -28,9 +31,9 @@ const SUGGESTIONS = [
     desc: 'Generate an artistic image of a neon cyberpunk city'
   },
   {
-    icon: '💡',
-    title: 'Ask any question',
-    desc: 'Explain quantum physics or help plan a weekend trip'
+    icon: '🎬',
+    title: 'Make an AI video',
+    desc: 'Generate a dynamic 1080p motion video scene (Pro)'
   },
   {
     icon: '📷',
@@ -46,6 +49,8 @@ export default function ChatArea({
   device,
   onSelectSuggestion,
   onOpenImageGen,
+  onOpenVideoGen,
+  onOpenProModal,
   userStats,
   user,
   onOpenAuth,
@@ -66,6 +71,7 @@ export default function ChatArea({
   };
 
   const isAuth = !!user;
+  const isPro = !!userStats?.isPro;
 
   return (
     <div className="flex-1 overflow-y-auto px-2.5 sm:px-4 py-3 sm:py-6 md:px-8 select-text overscroll-contain">
@@ -89,18 +95,20 @@ export default function ChatArea({
             </p>
 
             {/* Feature Pills */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-10 max-w-lg">
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 mb-6 sm:mb-10 max-w-xl">
               <span className="px-2.5 sm:px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-[11px] sm:text-xs font-medium text-blue-300">
                 ⚡ 4 Free Guest Questions / Day
               </span>
               <span className="px-2.5 sm:px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[11px] sm:text-xs font-medium text-emerald-300">
                 ✨ Unlimited with Free Sign In
               </span>
-              <span className="px-2.5 sm:px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-[11px] sm:text-xs font-medium text-purple-300">
-                🎨 5 AI Image Creations / Day
-              </span>
-              <span className="px-2.5 sm:px-3 py-1 rounded-full bg-teal-500/10 border border-teal-500/20 text-[11px] sm:text-xs font-medium text-teal-300">
-                📷 5 Photo Uploads / Day
+              <span 
+                onClick={onOpenProModal}
+                className="px-2.5 sm:px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/15 to-yellow-500/15 border border-amber-500/30 text-[11px] sm:text-xs font-semibold text-amber-300 cursor-pointer hover:border-amber-400 transition-all flex items-center gap-1"
+                title="Ask 4 questions/day for 30 days to unlock Pro for free!"
+              >
+                <Crown className="w-3.5 h-3.5 text-amber-400" />
+                <span>👑 Free Pro after 30-Day Streak (AI Videos + Unlimited Photos)</span>
               </span>
             </div>
 
@@ -115,6 +123,14 @@ export default function ChatArea({
                         onLimitExceeded?.('guest_image_gen');
                       } else {
                         onOpenImageGen();
+                      }
+                    } else if (idx === 2) {
+                      if (!isAuth) {
+                        onLimitExceeded?.('pro_required');
+                      } else if (!isPro) {
+                        onOpenProModal();
+                      } else {
+                        onOpenVideoGen();
                       }
                     } else if (idx === 3) {
                       if (!isAuth) {
@@ -229,6 +245,45 @@ export default function ChatArea({
                             <Download className="w-3.5 h-3.5" />
                             <span>Download Full 1024x1024</span>
                           </a>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* AI Generated Video (if any) */}
+                    {msg.generatedVideo && (
+                      <div className="mb-3 space-y-2">
+                        <div className="relative group rounded-2xl overflow-hidden border border-amber-500/30 max-w-lg shadow-xl bg-black">
+                          <video
+                            src={msg.generatedVideo}
+                            poster={msg.videoThumbnail}
+                            controls
+                            autoPlay
+                            loop
+                            playsInline
+                            className="w-full h-auto max-h-[360px] object-cover rounded-2xl"
+                          />
+                          <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/80 backdrop-blur-md border border-amber-500/40 text-amber-300 text-[10px] font-bold flex items-center gap-1 shadow pointer-events-none">
+                            <Crown className="w-3 h-3 text-amber-400" />
+                            <span>Ray Pro 1080p Video</span>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <a
+                            href={msg.generatedVideo}
+                            target="_blank"
+                            rel="noreferrer"
+                            download="ray-pro-video.mp4"
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#282a2c] hover:bg-[#333537] text-xs font-medium text-amber-300 border border-[#3c4043] transition-colors"
+                          >
+                            <Download className="w-3.5 h-3.5 text-amber-400" />
+                            <span>Download Video (HD)</span>
+                          </a>
+                          {msg.videoPrompt && (
+                            <span className="text-[11px] text-gray-400 truncate max-w-[200px]" title={msg.videoPrompt}>
+                              "{msg.videoPrompt}"
+                            </span>
+                          )}
                         </div>
                       </div>
                     )}

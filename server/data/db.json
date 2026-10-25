@@ -2,15 +2,20 @@
   "users": [
     {
       "id": "user_1791716480870_oll6i",
-      "questionsAsked": 3,
-      "imagesCreated": 3,
+      "questionsAsked": 0,
+      "imagesCreated": 0,
       "imagesUploaded": 0,
+      "videosCreated": 0,
+      "isPro": false,
+      "proStreak": 0,
+      "qualifyingDays": [],
+      "proUnlockedAt": null,
       "personalityNotes": "",
       "createdAt": "2026-10-11T11:01:20.870Z",
       "email": "demo@example.com",
       "name": "Friend",
       "passwordHash": "$2a$10$9uRMhDoI1T7dyOkx1A3YVeL9JqA.4JsqOq3FOjEw96EaB2XzlSa4K",
-      "quotaDate": "2026-10-11"
+      "quotaDate": "2026-10-25"
     }
   ],
   "guestSessions": {
@@ -117,6 +122,14 @@
       "imagesUploaded": 0,
       "quotaDate": "2026-10-11",
       "createdAt": "2026-10-11T16:11:44.003Z"
+    },
+    "test_guest_123": {
+      "id": "test_guest_123",
+      "questionsAsked": 0,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "quotaDate": "2026-10-25",
+      "createdAt": "2026-10-25T11:23:26.221Z"
     }
   },
   "chats": [

@@ -5,7 +5,10 @@ import ChatArea from './components/ChatArea.jsx';
 import InputBar from './components/InputBar.jsx';
 import AuthModal from './components/AuthModal.jsx';
 import ImageGenModal from './components/ImageGenModal.jsx';
+import VideoGenModal from './components/VideoGenModal.jsx';
+import ProModal from './components/ProModal.jsx';
 import LimitModal from './components/LimitModal.jsx';
+import { renderCinematicVideoBlob } from './utils/videoRenderer.js';
 import { X } from 'lucide-react';
 import { useDevice } from './utils/useDevice.js';
 
@@ -42,12 +45,19 @@ export default function App() {
   const [userStats, setUserStats] = useState({
     questionsAsked: 0,
     imagesCreated: 0,
-    imagesUploaded: 0
+    imagesUploaded: 0,
+    isPro: false,
+    proDaysCount: 0,
+    proDaysTarget: 30,
+    proStreak: 0,
+    videosCreated: 0
   });
 
   // Modals
   const [authModal, setAuthModal] = useState({ open: false, mode: 'signin' });
   const [imageGenModalOpen, setImageGenModalOpen] = useState(false);
+  const [videoGenModalOpen, setVideoGenModalOpen] = useState(false);
+  const [proModalOpen, setProModalOpen] = useState(false);
   const [limitModal, setLimitModal] = useState({ open: false, type: 'questions' });
   const [viewingImage, setViewingImage] = useState(null);
 
@@ -145,13 +155,13 @@ export default function App() {
       return;
     }
 
-    // 2. Upload image check: guests cannot upload images; signed-in users max 5/day
+    // 2. Upload image check: guests cannot upload images; signed-in users max 5/day (unless Pro)
     if (images.length > 0) {
       if (!user) {
         setLimitModal({ open: true, type: 'guest_image_upload' });
         return;
       }
-      if (userStats?.imagesUploaded + images.length > 5) {
+      if (!userStats?.isPro && (userStats?.imagesUploaded + images.length > 5)) {
         setLimitModal({ open: true, type: 'upload_image' });
         return;
       }
@@ -199,6 +209,8 @@ export default function App() {
           setLimitModal({ open: true, type: 'guest_image_gen' });
         } else if (data.code === 'LIMIT_IMAGE_UPLOAD_REACHED') {
           setLimitModal({ open: true, type: 'upload_image' });
+        } else if (data.code === 'PRO_REQUIRED') {
+          setProModalOpen(true);
         } else if (data.code === 'LIMIT_4_REACHED' || res.status === 403) {
           setLimitModal({ open: true, type: 'questions' });
         }
@@ -251,7 +263,8 @@ export default function App() {
       return;
     }
 
-    if (userStats?.imagesCreated >= 5) {
+    // Pro members have unlimited image generation
+    if (!userStats?.isPro && (userStats?.imagesCreated >= 5)) {
       setLimitModal({ open: true, type: 'create_image' });
       return;
     }
@@ -305,6 +318,90 @@ export default function App() {
     }
   };
 
+  // Generate AI Video (Ray Pro Exclusive)
+  const handleGenerateVideo = async (prompt, style = 'Cinematic 4K', motion = 'zoom') => {
+    if (!user) {
+      setLimitModal({ open: true, type: 'pro_required' });
+      return;
+    }
+
+    if (!userStats?.isPro) {
+      setProModalOpen(true);
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const res = await fetch('/api/generate-video', {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({
+          prompt,
+          style,
+          motion,
+          chatId: currentChatId
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        if (data.code === 'PRO_REQUIRED') {
+          setProModalOpen(true);
+          return;
+        }
+        throw new Error(data.error || 'Failed to generate video');
+      }
+
+      if (data.userStats) {
+        setUserStats(data.userStats);
+      }
+
+      // Render native cinematic motion video blob
+      const keyframeUrl = data.video?.url;
+      const motionRes = await renderCinematicVideoBlob({
+        imageUrl: keyframeUrl,
+        prompt,
+        motion,
+        durationSeconds: data.video?.duration || 4.5
+      });
+
+      const finalVideoUrl = motionRes?.videoUrl || keyframeUrl;
+
+      // Append video message to chat
+      const vidMsg = {
+        id: 'vid_' + Date.now(),
+        role: 'model',
+        content: `🎬 Here is the AI motion video I generated for you based on "${prompt}"! (${style}, motion: ${motion})`,
+        generatedVideo: finalVideoUrl,
+        videoMetadata: {
+          prompt,
+          style,
+          motion,
+          keyframe: keyframeUrl,
+          duration: data.video?.duration || 4.5,
+          timestamp: new Date().toISOString()
+        },
+        timestamp: new Date().toISOString()
+      };
+
+      setCurrentChat(prev => ({
+        ...prev,
+        messages: [...(prev.messages || []), vidMsg]
+      }));
+
+      // Refresh chats list if new chat
+      if (data.chatId && data.chatId !== currentChatId) {
+        setCurrentChatId(data.chatId);
+        fetchChats();
+      }
+    } catch (err) {
+      console.error('Video gen error:', err);
+      throw err;
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   // Auth Handlers
   const handleAuthSuccess = (data) => {
     setToken(data.token);
@@ -344,6 +441,8 @@ export default function App() {
         onOpenAuth={(mode) => setAuthModal({ open: true, mode })}
         onLogout={handleLogout}
         onOpenImageGen={() => setImageGenModalOpen(true)}
+        onOpenVideoGen={() => (userStats?.isPro ? setVideoGenModalOpen(true) : setProModalOpen(true))}
+        onOpenProModal={() => setProModalOpen(true)}
         onLimitExceeded={(type) => setLimitModal({ open: true, type })}
       />
 
@@ -353,8 +452,10 @@ export default function App() {
           onToggleSidebar={() => setSidebarOpen(prev => !prev)}
           detectedVibe={currentChat.detectedVibe}
           user={user}
+          userStats={userStats}
           device={device}
           onOpenAuth={(mode) => setAuthModal({ open: true, mode })}
+          onOpenProModal={() => setProModalOpen(true)}
           onNewChat={handleNewChat}
           onLogout={handleLogout}
         />
@@ -366,6 +467,8 @@ export default function App() {
           device={device}
           onSelectSuggestion={(sug) => handleSendMessage(sug)}
           onOpenImageGen={() => setImageGenModalOpen(true)}
+          onOpenVideoGen={() => (userStats?.isPro ? setVideoGenModalOpen(true) : setProModalOpen(true))}
+          onOpenProModal={() => setProModalOpen(true)}
           userStats={userStats}
           user={user}
           onOpenAuth={(mode) => setAuthModal({ open: true, mode })}
@@ -376,6 +479,8 @@ export default function App() {
         <InputBar
           onSendMessage={handleSendMessage}
           onOpenImageGen={() => setImageGenModalOpen(true)}
+          onOpenVideoGen={() => (userStats?.isPro ? setVideoGenModalOpen(true) : setProModalOpen(true))}
+          onOpenProModal={() => setProModalOpen(true)}
           userStats={userStats}
           user={user}
           device={device}
@@ -421,12 +526,47 @@ export default function App() {
         onGenerateImage={handleGenerateImage}
       />
 
+      {/* AI Video Studio Modal */}
+      <VideoGenModal
+        isOpen={videoGenModalOpen}
+        onClose={() => setVideoGenModalOpen(false)}
+        isPro={!!userStats?.isPro}
+        onOpenProModal={() => {
+          setVideoGenModalOpen(false);
+          setProModalOpen(true);
+        }}
+        onGenerateVideo={handleGenerateVideo}
+      />
+
+      {/* Ray Pro Subscription Modal */}
+      <ProModal
+        isOpen={proModalOpen}
+        onClose={() => setProModalOpen(false)}
+        userStats={userStats}
+        user={user}
+        onOpenAuth={(mode) => {
+          setProModalOpen(false);
+          setAuthModal({ open: true, mode });
+        }}
+        onToggleProSuccess={(updatedStats) => {
+          if (updatedStats) {
+            setUserStats(updatedStats);
+          } else {
+            fetchUserStatus();
+          }
+        }}
+      />
+
       {/* Limit Modal */}
       <LimitModal
         isOpen={limitModal.open}
         limitType={limitModal.type}
         onClose={() => setLimitModal({ open: false, type: 'questions' })}
         onOpenAuth={(mode) => setAuthModal({ open: true, mode })}
+        onOpenProModal={() => {
+          setLimitModal({ open: false, type: 'questions' });
+          setProModalOpen(true);
+        }}
       />
     </div>
   );

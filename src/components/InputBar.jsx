@@ -1,9 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Image as ImageIcon, Upload, X, Sparkles, Loader2 } from 'lucide-react';
+import { Send, Image as ImageIcon, Upload, X, Sparkles, Loader2, Video, Crown } from 'lucide-react';
 
 export default function InputBar({
   onSendMessage,
   onOpenImageGen,
+  onOpenVideoGen,
+  onOpenProModal,
   userStats,
   user,
   device,
@@ -16,6 +18,7 @@ export default function InputBar({
   const textareaRef = useRef(null);
 
   const isAuth = !!user;
+  const isPro = !!userStats?.isPro;
   const questionsAsked = userStats?.questionsAsked || 0;
   const imagesUploaded = userStats?.imagesUploaded || 0;
   const imagesCreated = userStats?.imagesCreated || 0;
@@ -38,8 +41,8 @@ export default function InputBar({
       return;
     }
 
-    // Check upload limit
-    if (imagesUploaded + selectedImages.length + files.length > 5) {
+    // Check upload limit (Pro members bypass!)
+    if (!isPro && imagesUploaded + selectedImages.length + files.length > 5) {
       onLimitExceeded('upload_image');
       e.target.value = '';
       return;
@@ -50,7 +53,7 @@ export default function InputBar({
       const reader = new FileReader();
       reader.onload = (uploadEvent) => {
         setSelectedImages(prev => {
-          if (imagesUploaded + prev.length >= 5) {
+          if (!isPro && imagesUploaded + prev.length >= 5) {
             onLimitExceeded('upload_image');
             return prev;
           }
@@ -100,11 +103,24 @@ export default function InputBar({
       onLimitExceeded('guest_image_gen');
       return;
     }
-    if (imagesCreated >= 5) {
+    // Pro members have UNLIMITED creations
+    if (!isPro && imagesCreated >= 5) {
       onLimitExceeded('create_image');
       return;
     }
     onOpenImageGen();
+  };
+
+  const handleVideoGenClick = () => {
+    if (!isAuth) {
+      onLimitExceeded('pro_required');
+      return;
+    }
+    if (!isPro) {
+      onOpenProModal();
+      return;
+    }
+    onOpenVideoGen();
   };
 
   return (
@@ -172,24 +188,26 @@ export default function InputBar({
                     onLimitExceeded('guest_image_upload');
                     return;
                   }
-                  if (imagesUploaded >= 5) {
+                  if (!isPro && imagesUploaded >= 5) {
                     onLimitExceeded('upload_image');
                     return;
                   }
                   fileInputRef.current?.click();
                 }}
                 className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all min-h-[36px] touch-manipulation active:scale-95 ${
-                  isAuth && imagesUploaded >= 5
+                  !isPro && isAuth && imagesUploaded >= 5
                     ? 'text-gray-500 hover:text-gray-400 bg-[#282a2c]/50 cursor-not-allowed'
                     : 'text-teal-300 hover:text-teal-200 bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/20'
                 }`}
-                title={isAuth ? "Upload photo for Ray Vision analysis (5 per day)" : "Sign in to upload photos"}
+                title={isPro ? "Upload unlimited photos with Pro" : isAuth ? "Upload photo for Ray Vision analysis (5 per day)" : "Sign in to upload photos"}
               >
                 <Upload className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="text-[11px] sm:text-xs">
                   <span className="hidden sm:inline">Upload </span>Photo
                 </span>
-                <span className="text-[9px] sm:text-[10px] opacity-75">{isAuth ? `(${imagesUploaded}/5)` : '(Sign in)'}</span>
+                <span className="text-[9px] sm:text-[10px] opacity-75">
+                  {isPro ? '(Unlimited)' : isAuth ? `(${imagesUploaded}/5)` : '(Sign in)'}
+                </span>
               </button>
 
               {/* Generate image button */}
@@ -197,17 +215,40 @@ export default function InputBar({
                 type="button"
                 onClick={handleImageGenClick}
                 className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all min-h-[36px] touch-manipulation active:scale-95 ${
-                  isAuth && imagesCreated >= 5
+                  !isPro && isAuth && imagesCreated >= 5
                     ? 'text-gray-500 hover:text-gray-400 bg-[#282a2c]/50 cursor-not-allowed'
                     : 'text-purple-300 hover:text-purple-200 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/20'
                 }`}
-                title={isAuth ? "Generate an image with AI (5 per day)" : "Sign in to create images"}
+                title={isPro ? "Generate unlimited AI images with Pro" : isAuth ? "Generate an image with AI (5 per day)" : "Sign in to create images"}
               >
                 <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
                 <span className="text-[11px] sm:text-xs">
                   <span className="hidden sm:inline">Create </span>Art
                 </span>
-                <span className="text-[9px] sm:text-[10px] opacity-75">{isAuth ? `(${imagesCreated}/5)` : '(Sign in)'}</span>
+                <span className="text-[9px] sm:text-[10px] opacity-75">
+                  {isPro ? '(Unlimited)' : isAuth ? `(${imagesCreated}/5)` : '(Sign in)'}
+                </span>
+              </button>
+
+              {/* Generate AI Video button (Pro feature) */}
+              <button
+                type="button"
+                onClick={handleVideoGenClick}
+                className={`flex items-center gap-1 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all min-h-[36px] touch-manipulation active:scale-95 ${
+                  isPro
+                    ? 'text-amber-300 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30'
+                    : 'text-amber-400/90 hover:text-amber-300 bg-[#252729] hover:bg-[#2e3033] border border-[#3c4043]'
+                }`}
+                title={isPro ? "Generate AI Video (Pro Unlimited)" : "AI Video (Exclusive to Pro members - Ask 4 questions/day for 30 days or unlock)"}
+              >
+                <Video className="w-3.5 h-3.5 flex-shrink-0 text-amber-400" />
+                <span className="text-[11px] sm:text-xs">
+                  <span className="hidden sm:inline">AI </span>Video
+                </span>
+                <span className="text-[9px] sm:text-[10px] font-bold px-1 py-0.2 rounded bg-amber-500/20 text-amber-300 flex items-center gap-0.5">
+                  <Crown className="w-2.5 h-2.5" />
+                  <span>Pro</span>
+                </span>
               </button>
             </div>
 
@@ -233,13 +274,17 @@ export default function InputBar({
 
         {/* Footer info text */}
         <div className="mt-1.5 sm:mt-2 text-center text-[10px] sm:text-[11px] text-gray-500 truncate px-1">
-          {!isAuth ? (
+          {isPro ? (
+            <span className="text-amber-400/90">
+              👑 <strong className="text-amber-300">PRO MEMBER</strong>: Unlimited questions, unlimited photo uploads, unlimited art & AI video active!
+            </span>
+          ) : !isAuth ? (
             <span>
-              Guest mode: <strong className="text-gray-400">{Math.max(0, 4 - questionsAsked)}/4</strong> free questions left today • Resets daily • Sign in for unlimited
+              Guest mode: <strong className="text-gray-400">{Math.max(0, 4 - questionsAsked)}/4</strong> free questions left today • Resets daily • Sign in to unlock Pro
             </span>
           ) : (
             <span>
-              <strong className="text-gray-300">{user.name}</strong> • Unlimited questions • 5 creations & 5 uploads per day (resets daily)
+              <strong className="text-gray-300">{user.name}</strong> • 5 creations & 5 uploads/day • Ask 4 questions daily to earn free <strong className="text-amber-400">Ray Pro</strong>!
             </span>
           )}
         </div>

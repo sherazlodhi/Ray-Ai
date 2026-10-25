@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { db } from './db.js';
-import { generateLlamaResponse, analyzeToneAndStyle, generateAiImage } from './llama.js';
+import { generateLlamaResponse, analyzeToneAndStyle, generateAiImage, generateAiVideo } from './llama.js';
 
 dotenv.config();
 
@@ -33,15 +33,26 @@ function getAuthUser(req) {
 function getOwnerIdentity(req) {
   const user = getAuthUser(req);
   if (user) {
+    const qualifyingDays = Array.isArray(user.qualifyingDays) ? user.qualifyingDays : [];
+    const isPro = !!user.isPro || qualifyingDays.length >= 30;
+    const proDaysCount = isPro ? Math.max(30, qualifyingDays.length) : qualifyingDays.length;
+
     return {
       isAuth: true,
       user,
       id: user.id,
       name: user.name,
+      email: user.email,
       quotaDate: user.quotaDate,
       questionsAsked: user.questionsAsked || 0,
       imagesCreated: user.imagesCreated || 0,
-      imagesUploaded: user.imagesUploaded || 0
+      imagesUploaded: user.imagesUploaded || 0,
+      videosCreated: user.videosCreated || 0,
+      isPro,
+      proStreak: isPro ? Math.max(30, user.proStreak || 30) : (user.proStreak || qualifyingDays.length),
+      qualifyingDays,
+      proDaysCount,
+      proUnlockedAt: user.proUnlockedAt || null
     };
   }
 
@@ -55,7 +66,53 @@ function getOwnerIdentity(req) {
     quotaDate: guest.quotaDate,
     questionsAsked: guest.questionsAsked || 0,
     imagesCreated: guest.imagesCreated || 0,
-    imagesUploaded: guest.imagesUploaded || 0
+    imagesUploaded: guest.imagesUploaded || 0,
+    videosCreated: 0,
+    isPro: false,
+    proStreak: 0,
+    qualifyingDays: [],
+    proDaysCount: 0,
+    proUnlockedAt: null
+  };
+}
+
+// Helper: build comprehensive user status & limits object
+function buildUserStats(identity) {
+  const isAuth = identity.isAuth;
+  const isPro = !!identity.isPro;
+  const proDaysCount = identity.proDaysCount || 0;
+
+  return {
+    isAuthenticated: isAuth,
+    userName: identity.name,
+    isPro: isPro,
+    proDaysCount: proDaysCount,
+    proDaysTarget: 30,
+    proStreak: identity.proStreak || 0,
+    proUnlockedAt: identity.proUnlockedAt,
+    quotaDate: identity.quotaDate,
+    questionsAsked: identity.questionsAsked,
+    questionLimit: isAuth ? null : 4,
+    questionsRemaining: isAuth ? 'unlimited' : Math.max(0, 4 - identity.questionsAsked),
+
+    // Images: Pro members get unlimited creations & uploads!
+    canCreateImages: isAuth,
+    imageCreationLimit: isPro ? 'unlimited' : (isAuth ? 5 : 0),
+    imagesCreated: identity.imagesCreated,
+    imagesCreatedRemaining: isPro ? 'unlimited' : (isAuth ? Math.max(0, 5 - identity.imagesCreated) : 0),
+
+    canUploadImages: isAuth,
+    imageUploadLimit: isPro ? 'unlimited' : (isAuth ? 5 : 0),
+    imagesUploaded: identity.imagesUploaded,
+    imagesUploadedRemaining: isPro ? 'unlimited' : (isAuth ? Math.max(0, 5 - identity.imagesUploaded) : 0),
+
+    // Videos: Exclusive to Pro members!
+    canCreateVideos: isPro,
+    videoCreationLimit: isPro ? 'unlimited' : 0,
+    videosCreated: identity.videosCreated || 0,
+    videosCreatedRemaining: isPro ? 'unlimited' : 0,
+
+    resetsDaily: true
   };
 }
 
@@ -94,8 +151,12 @@ app.post('/api/auth/register', (req, res) => {
         name: user.name,
         questionsAsked: user.questionsAsked,
         imagesCreated: user.imagesCreated,
-        imagesUploaded: user.imagesUploaded
-      }
+        imagesUploaded: user.imagesUploaded,
+        isPro: !!user.isPro,
+        proStreak: user.proStreak || 0,
+        proDaysCount: user.qualifyingDays ? user.qualifyingDays.length : 0
+      },
+      userStats: buildUserStats({ isAuth: true, user })
     });
   } catch (err) {
     console.error('Registration error:', err);
@@ -130,8 +191,12 @@ app.post('/api/auth/login', (req, res) => {
         name: user.name,
         questionsAsked: user.questionsAsked,
         imagesCreated: user.imagesCreated,
-        imagesUploaded: user.imagesUploaded
-      }
+        imagesUploaded: user.imagesUploaded,
+        isPro: !!user.isPro,
+        proStreak: user.proStreak || 0,
+        proDaysCount: user.qualifyingDays ? user.qualifyingDays.length : 0
+      },
+      userStats: buildUserStats({ isAuth: true, user })
     });
   } catch (err) {
     console.error('Login error:', err);
@@ -151,7 +216,10 @@ app.get('/api/auth/me', (req, res) => {
       name: user.name,
       questionsAsked: user.questionsAsked || 0,
       imagesCreated: user.imagesCreated || 0,
-      imagesUploaded: user.imagesUploaded || 0
+      imagesUploaded: user.imagesUploaded || 0,
+      isPro: !!user.isPro,
+      proStreak: user.proStreak || 0,
+      proDaysCount: user.qualifyingDays ? user.qualifyingDays.length : 0
     }
   });
 });
@@ -162,22 +230,25 @@ app.get('/api/auth/me', (req, res) => {
 
 app.get('/api/user/status', (req, res) => {
   const identity = getOwnerIdentity(req);
+  res.json(buildUserStats(identity));
+});
+
+// -------------------------------------------------------------
+// Pro Subscription Toggle / Claim Endpoint (for demo & testing)
+// -------------------------------------------------------------
+
+app.post('/api/user/toggle-pro', (req, res) => {
+  const identity = getOwnerIdentity(req);
+  if (!identity.isAuth) {
+    return res.status(401).json({ error: 'Must be signed in to manage Pro subscription.' });
+  }
+
+  const updatedUser = db.toggleUserPro(identity.user.id, req.body?.isPro);
+  const updatedIdentity = getOwnerIdentity(req);
   res.json({
-    isAuthenticated: identity.isAuth,
-    userName: identity.name,
-    quotaDate: identity.quotaDate,
-    questionsAsked: identity.questionsAsked,
-    questionLimit: identity.isAuth ? null : 4,
-    questionsRemaining: identity.isAuth ? 'unlimited' : Math.max(0, 4 - identity.questionsAsked),
-    canCreateImages: identity.isAuth,
-    imageCreationLimit: identity.isAuth ? 5 : 0,
-    imagesCreated: identity.imagesCreated,
-    imagesCreatedRemaining: identity.isAuth ? Math.max(0, 5 - identity.imagesCreated) : 0,
-    canUploadImages: identity.isAuth,
-    imageUploadLimit: identity.isAuth ? 5 : 0,
-    imagesUploaded: identity.imagesUploaded,
-    imagesUploadedRemaining: identity.isAuth ? Math.max(0, 5 - identity.imagesUploaded) : 0,
-    resetsDaily: true
+    success: true,
+    isPro: updatedUser.isPro,
+    userStats: buildUserStats(updatedIdentity)
   });
 });
 
@@ -235,7 +306,7 @@ app.post('/api/chat', async (req, res) => {
       }
     }
 
-    // 2. CHECK IMAGE UPLOAD RULES (GUESTS CANNOT UPLOAD; SIGNED-IN USERS MAX 5 PER DAY)
+    // 2. CHECK IMAGE UPLOAD RULES (GUESTS CANNOT UPLOAD; SIGNED-IN STANDARD USERS MAX 5 PER DAY; PRO = UNLIMITED)
     const newUploadCount = Array.isArray(images) ? images.length : 0;
     if (newUploadCount > 0) {
       if (!identity.isAuth) {
@@ -246,11 +317,12 @@ app.post('/api/chat', async (req, res) => {
         });
       }
 
-      if (identity.imagesUploaded + newUploadCount > 5) {
+      // Pro members have UNLIMITED uploads!
+      if (!identity.isPro && (identity.imagesUploaded + newUploadCount > 5)) {
         return res.status(403).json({
           error: 'IMAGE_UPLOAD_LIMIT_REACHED',
           code: 'LIMIT_IMAGE_UPLOAD_REACHED',
-          message: `You have reached your daily limit of 5 image uploads. You have already uploaded ${identity.imagesUploaded} image(s) today. Resets tomorrow!`
+          message: `You have reached your daily limit of 5 image uploads. You have already uploaded ${identity.imagesUploaded} image(s) today. Ask at least 4 questions daily for a month to unlock Ray AI Pro with unlimited uploads!`
         });
       }
     }
@@ -308,12 +380,14 @@ app.post('/api/chat', async (req, res) => {
     };
     chat.messages.push(aiMsg);
 
-    // Increment question count
+    // Increment question count and track Pro streak
     if (identity.isAuth) {
-      db.updateUser(identity.user.id, {
-        questionsAsked: (identity.user.questionsAsked || 0) + 1,
-        imagesUploaded: (identity.user.imagesUploaded || 0) + newUploadCount
-      });
+      db.recordUserQuestion(identity.user.id);
+      if (newUploadCount > 0) {
+        db.updateUser(identity.user.id, {
+          imagesUploaded: (identity.user.imagesUploaded || 0) + newUploadCount
+        });
+      }
     } else {
       db.updateGuest(identity.guest.id, {
         questionsAsked: (identity.guest.questionsAsked || 0) + 1,
@@ -337,19 +411,7 @@ app.post('/api/chat', async (req, res) => {
       reply: aiMsg,
       detectedVibe: userTone.vibe,
       apiKeyMissing: !llamaResult.text,
-      userStats: {
-        isAuthenticated: updatedIdentity.isAuth,
-        quotaDate: updatedIdentity.quotaDate,
-        questionsAsked: updatedIdentity.questionsAsked,
-        questionsRemaining: updatedIdentity.isAuth ? 'unlimited' : Math.max(0, 4 - updatedIdentity.questionsAsked),
-        canCreateImages: updatedIdentity.isAuth,
-        imagesCreated: updatedIdentity.imagesCreated,
-        imagesCreatedRemaining: updatedIdentity.isAuth ? Math.max(0, 5 - updatedIdentity.imagesCreated) : 0,
-        canUploadImages: updatedIdentity.isAuth,
-        imagesUploaded: updatedIdentity.imagesUploaded,
-        imagesUploadedRemaining: updatedIdentity.isAuth ? Math.max(0, 5 - updatedIdentity.imagesUploaded) : 0,
-        resetsDaily: true
-      }
+      userStats: buildUserStats(updatedIdentity)
     });
   } catch (err) {
     console.error('Chat error:', err);
@@ -379,12 +441,12 @@ app.post('/api/generate-image', async (req, res) => {
       });
     }
 
-    // 2. CHECK IMAGE CREATION LIMIT (MAX 5 CREATED IMAGES PER DAY)
-    if (identity.imagesCreated >= 5) {
+    // 2. CHECK IMAGE CREATION LIMIT (MAX 5 PER DAY FOR STANDARD MEMBERS; PRO = UNLIMITED)
+    if (!identity.isPro && identity.imagesCreated >= 5) {
       return res.status(403).json({
         error: 'IMAGE_CREATION_LIMIT_REACHED',
         code: 'LIMIT_IMAGE_CREATION_REACHED',
-        message: 'You have created 5 images today (daily limit reached). This limit resets every day!'
+        message: 'You have created 5 images today (daily limit reached). Unlock Ray AI Pro by asking 4 questions daily for a month for unlimited image creation!'
       });
     }
 
@@ -416,21 +478,83 @@ app.post('/api/generate-image', async (req, res) => {
 
     res.json({
       image: imageResult,
-      userStats: {
-        isAuthenticated: updatedIdentity.isAuth,
-        quotaDate: updatedIdentity.quotaDate,
-        imagesCreated: updatedIdentity.imagesCreated,
-        imagesCreatedRemaining: Math.max(0, 5 - updatedIdentity.imagesCreated),
-        imagesUploaded: updatedIdentity.imagesUploaded,
-        imagesUploadedRemaining: Math.max(0, 5 - updatedIdentity.imagesUploaded),
-        questionsAsked: updatedIdentity.questionsAsked,
-        questionsRemaining: updatedIdentity.isAuth ? 'unlimited' : Math.max(0, 4 - updatedIdentity.questionsAsked),
-        resetsDaily: true
-      }
+      userStats: buildUserStats(updatedIdentity)
     });
   } catch (err) {
     console.error('Image generation error:', err);
     res.status(500).json({ error: err.message || 'Failed to generate image.' });
+  }
+});
+
+// -------------------------------------------------------------
+// Video Creation Endpoint (Exclusive for Pro Members)
+// -------------------------------------------------------------
+
+app.post('/api/generate-video', async (req, res) => {
+  try {
+    const identity = getOwnerIdentity(req);
+    const { prompt, style = 'Cinematic 4K', chatId } = req.body;
+
+    if (!prompt || typeof prompt !== 'string') {
+      return res.status(400).json({ error: 'Prompt is required for video creation.' });
+    }
+
+    // 1. GUESTS CANNOT CREATE VIDEOS
+    if (!identity.isAuth) {
+      return res.status(403).json({
+        error: 'GUEST_VIDEO_CREATION_NOT_ALLOWED',
+        code: 'GUEST_VIDEO_CREATION_NOT_ALLOWED',
+        message: 'Guests cannot create videos. Sign in and unlock Ray AI Pro to create AI videos!'
+      });
+    }
+
+    // 2. CHECK PRO STATUS (REQUIRES PRO MEMBERSHIP)
+    if (!identity.isPro) {
+      return res.status(403).json({
+        error: 'PRO_REQUIRED',
+        code: 'PRO_REQUIRED',
+        message: 'AI Video creation is exclusive to Ray AI Pro members! Ask at least 4 questions every day for 30 days while signed in to unlock Pro.',
+        proDaysCount: identity.proDaysCount,
+        proDaysTarget: 30
+      });
+    }
+
+    // Generate AI Video
+    const videoResult = await generateAiVideo(prompt, style);
+
+    // Increment user video count
+    db.updateUser(identity.user.id, {
+      videosCreated: (identity.user.videosCreated || 0) + 1
+    });
+
+    // If a chatId was provided, append this generated video to chat history
+    if (chatId) {
+      const chat = db.getChatById(chatId);
+      if (chat) {
+        const vidMsg = {
+          id: 'msg_' + Date.now() + '_video',
+          role: 'model',
+          content: `Here is the AI video I created for you based on "${prompt}"! 🎬 (Ray Pro Ultra HD)`,
+          generatedVideo: videoResult.videoUrl,
+          videoThumbnail: videoResult.keyframeUrl,
+          videoPrompt: prompt,
+          videoStyle: style,
+          timestamp: new Date().toISOString()
+        };
+        chat.messages.push(vidMsg);
+        db.updateChat(chatId, { messages: chat.messages });
+      }
+    }
+
+    const updatedIdentity = getOwnerIdentity(req);
+
+    res.json({
+      video: videoResult,
+      userStats: buildUserStats(updatedIdentity)
+    });
+  } catch (err) {
+    console.error('Video generation error:', err);
+    res.status(500).json({ error: err.message || 'Failed to generate video.' });
   }
 });
 

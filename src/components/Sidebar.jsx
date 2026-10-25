@@ -12,7 +12,10 @@ import {
   Infinity as InfinityIcon, 
   HelpCircle,
   Key,
-  X
+  X,
+  Crown,
+  Video,
+  Flame
 } from 'lucide-react';
 
 export default function Sidebar({
@@ -29,9 +32,13 @@ export default function Sidebar({
   onOpenAuth,
   onLogout,
   onOpenImageGen,
+  onOpenVideoGen,
+  onOpenProModal,
   onLimitExceeded
 }) {
   const isAuth = !!user;
+  const isPro = !!userStats?.isPro;
+  const proDaysCount = userStats?.proDaysCount || 0;
   const questionsAsked = userStats?.questionsAsked || 0;
   const imagesCreated = userStats?.imagesCreated || 0;
   const imagesUploaded = userStats?.imagesUploaded || 0;
@@ -187,8 +194,55 @@ export default function Sidebar({
             )}
           </div>
 
-          {/* Image limits */}
-          <div className="grid grid-cols-2 gap-2 text-[11px]">
+          {/* Pro Streak Tracker / Pro Status Card */}
+          <div
+            onClick={onOpenProModal}
+            className={`p-2.5 rounded-xl cursor-pointer transition-all border ${
+              isPro
+                ? 'bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border-amber-500/40 hover:border-amber-400'
+                : 'bg-[#242628] hover:bg-[#2b2d30] border-amber-500/25 hover:border-amber-500/50'
+            }`}
+            title={isPro ? "Ray AI Pro Active (Unlimited Everything)" : "Ask 4 questions/day for 30 days to earn Pro!"}
+          >
+            <div className="flex items-center justify-between text-xs font-semibold mb-1">
+              <span className="flex items-center gap-1.5 text-gray-200">
+                <Crown className={`w-3.5 h-3.5 ${isPro ? 'text-amber-400' : 'text-amber-400/80'}`} />
+                {isPro ? 'Ray AI Pro' : 'Pro Streak'}
+              </span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
+                isPro 
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
+                  : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+              }`}>
+                {isPro ? '👑 Unlocked' : `${proDaysCount} / 30 Days`}
+              </span>
+            </div>
+
+            {!isPro && (
+              <>
+                <div className="w-full bg-[#18191a] h-1.5 rounded-full overflow-hidden my-1">
+                  <div 
+                    className="h-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all duration-300"
+                    style={{ width: `${Math.min(100, (proDaysCount / 30) * 100)}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-between text-[10px] text-gray-400">
+                  <span>4 questions/day</span>
+                  <span className="text-amber-300 font-medium">View perks →</span>
+                </div>
+              </>
+            )}
+
+            {isPro && (
+              <div className="text-[10px] text-amber-300/90 flex items-center justify-between">
+                <span>Unlimited Art, Uploads & Videos</span>
+                <span className="text-amber-400">👑 Active</span>
+              </div>
+            )}
+          </div>
+
+          {/* Creation & Upload limits grid */}
+          <div className="grid grid-cols-3 gap-1.5 text-[11px]">
             {/* Create Image widget */}
             <div 
               onClick={() => {
@@ -199,21 +253,21 @@ export default function Sidebar({
                 }
               }}
               className="bg-[#242628] hover:bg-[#2b2d30] cursor-pointer p-2 rounded-lg border border-[#333537] flex flex-col gap-1 transition-all"
-              title={isAuth ? "Click to generate an image (5/day)" : "Sign in to generate images"}
+              title={isPro ? "Create unlimited images with Pro" : isAuth ? "Create image (5/day)" : "Sign in to create images"}
             >
               <div className="flex items-center justify-between text-gray-400">
                 <span className="flex items-center gap-1">
                   <ImageIcon className="w-3 h-3 text-purple-400" />
-                  Create
+                  <span className="truncate">Art</span>
                 </span>
-                <span className={`font-semibold ${isAuth ? 'text-gray-300' : 'text-purple-400 text-[10px]'}`}>
-                  {isAuth ? `${imagesCreated}/5` : 'Sign in'}
+                <span className={`font-semibold ${isPro ? 'text-amber-300 text-[10px]' : isAuth ? 'text-gray-300' : 'text-purple-400 text-[10px]'}`}>
+                  {isPro ? '👑 Unltd' : isAuth ? `${imagesCreated}/5` : 'Sign in'}
                 </span>
               </div>
               <div className="w-full bg-[#18191a] h-1 rounded-full overflow-hidden">
                 <div 
-                  className="bg-purple-500 h-full transition-all"
-                  style={{ width: `${isAuth ? Math.min(100, (imagesCreated / 5) * 100) : 0}%` }}
+                  className={`${isPro ? 'bg-amber-400' : 'bg-purple-500'} h-full transition-all`}
+                  style={{ width: `${isPro ? 100 : isAuth ? Math.min(100, (imagesCreated / 5) * 100) : 0}%` }}
                 />
               </div>
             </div>
@@ -226,40 +280,80 @@ export default function Sidebar({
                 }
               }}
               className={`bg-[#242628] p-2 rounded-lg border border-[#333537] flex flex-col gap-1 ${!isAuth ? 'hover:bg-[#2b2d30] cursor-pointer' : ''}`}
-              title={isAuth ? "Upload photo (5/day)" : "Sign in to upload photos"}
+              title={isPro ? "Upload unlimited photos with Pro" : isAuth ? "Upload photo (5/day)" : "Sign in to upload photos"}
             >
               <div className="flex items-center justify-between text-gray-400">
                 <span className="flex items-center gap-1">
                   <Upload className="w-3 h-3 text-teal-400" />
-                  Upload
+                  <span className="truncate">Photos</span>
                 </span>
-                <span className={`font-semibold ${isAuth ? 'text-gray-300' : 'text-teal-400 text-[10px]'}`}>
-                  {isAuth ? `${imagesUploaded}/5` : 'Sign in'}
+                <span className={`font-semibold ${isPro ? 'text-amber-300 text-[10px]' : isAuth ? 'text-gray-300' : 'text-teal-400 text-[10px]'}`}>
+                  {isPro ? '👑 Unltd' : isAuth ? `${imagesUploaded}/5` : 'Sign in'}
                 </span>
               </div>
               <div className="w-full bg-[#18191a] h-1 rounded-full overflow-hidden">
                 <div 
-                  className="bg-teal-500 h-full transition-all"
-                  style={{ width: `${isAuth ? Math.min(100, (imagesUploaded / 5) * 100) : 0}%` }}
+                  className={`${isPro ? 'bg-amber-400' : 'bg-teal-500'} h-full transition-all`}
+                  style={{ width: `${isPro ? 100 : isAuth ? Math.min(100, (imagesUploaded / 5) * 100) : 0}%` }}
+                />
+              </div>
+            </div>
+
+            {/* AI Video widget */}
+            <div 
+              onClick={() => {
+                if (!isAuth) {
+                  onLimitExceeded?.('pro_required');
+                } else if (!isPro) {
+                  onOpenProModal();
+                } else {
+                  onOpenVideoGen();
+                }
+              }}
+              className={`bg-[#242628] p-2 rounded-lg border border-[#333537] flex flex-col gap-1 cursor-pointer hover:bg-[#2b2d30] transition-all`}
+              title={isPro ? "Generate AI Video (Pro Unlimited)" : "AI Video (Pro Exclusive)"}
+            >
+              <div className="flex items-center justify-between text-gray-400">
+                <span className="flex items-center gap-1">
+                  <Video className="w-3 h-3 text-amber-400" />
+                  <span className="truncate">Video</span>
+                </span>
+                <span className={`font-semibold text-[10px] ${isPro ? 'text-amber-300' : 'text-amber-400/80'}`}>
+                  {isPro ? '👑 Ready' : '👑 Pro'}
+                </span>
+              </div>
+              <div className="w-full bg-[#18191a] h-1 rounded-full overflow-hidden">
+                <div 
+                  className="bg-amber-400 h-full transition-all"
+                  style={{ width: `${isPro ? 100 : 0}%` }}
                 />
               </div>
             </div>
           </div>
 
           <div className="text-[10px] text-gray-500 text-center">
-            All limits reset daily at midnight
+            {isPro ? 'Ray AI Pro Active • Unlimited Access' : 'All limits reset daily at midnight'}
           </div>
 
           {/* User profile / Sign in button */}
           {isAuth ? (
             <div className="flex items-center justify-between pt-1">
               <div className="flex items-center gap-2 truncate">
-                <div className="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-xs font-bold text-white shadow">
-                  {user.name ? user.name[0].toUpperCase() : 'U'}
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold text-white shadow ${
+                  isPro 
+                    ? 'bg-gradient-to-tr from-amber-500 to-yellow-400 text-black' 
+                    : 'bg-gradient-to-tr from-blue-600 to-indigo-600'
+                }`}>
+                  {isPro ? '👑' : (user.name ? user.name[0].toUpperCase() : 'U')}
                 </div>
                 <div className="truncate text-xs">
-                  <div className="font-medium text-gray-200 truncate">{user.name}</div>
-                  <div className="text-[10px] text-emerald-400">Unlimited Member</div>
+                  <div className="font-medium text-gray-200 truncate flex items-center gap-1">
+                    <span>{user.name}</span>
+                    {isPro && <Crown className="w-3 h-3 text-amber-400" />}
+                  </div>
+                  <div className={`text-[10px] ${isPro ? 'text-amber-400 font-semibold' : 'text-emerald-400'}`}>
+                    {isPro ? '👑 Pro Member' : 'Unlimited Member'}
+                  </div>
                 </div>
               </div>
               <button

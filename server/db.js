@@ -79,7 +79,16 @@ class JSONDatabase {
       record.questionsAsked = 0;
       record.imagesCreated = 0;
       record.imagesUploaded = 0;
+      record.videosCreated = 0;
       this.save();
+    }
+    // Auto-check Pro qualification for users (30 qualifying days with >=4 questions)
+    if (record.id && record.id.startsWith('user_')) {
+      if (!Array.isArray(record.qualifyingDays)) record.qualifyingDays = [];
+      if (typeof record.proStreak !== 'number') record.proStreak = record.qualifyingDays.length;
+      if (record.qualifyingDays.length >= 30) {
+        record.isPro = true;
+      }
     }
     return record;
   }
@@ -103,6 +112,11 @@ class JSONDatabase {
       questionsAsked: 0,
       imagesCreated: 0,
       imagesUploaded: 0,
+      videosCreated: 0,
+      isPro: false,
+      proStreak: 0,
+      qualifyingDays: [],
+      proUnlockedAt: null,
       quotaDate: this.getTodayString(),
       personalityNotes: '',
       createdAt: new Date().toISOString(),
@@ -117,6 +131,59 @@ class JSONDatabase {
     const user = this.getUserById(id);
     if (!user) return null;
     Object.assign(user, updates);
+    this.save();
+    return user;
+  }
+
+  recordUserQuestion(userId) {
+    const user = this.getUserById(userId);
+    if (!user) return null;
+    
+    user.questionsAsked = (user.questionsAsked || 0) + 1;
+    const today = this.getTodayString();
+
+    if (!Array.isArray(user.qualifyingDays)) {
+      user.qualifyingDays = [];
+    }
+
+    // A qualifying day has at least 4 questions asked
+    if (user.questionsAsked >= 4 && !user.qualifyingDays.includes(today)) {
+      user.qualifyingDays.push(today);
+      user.proStreak = user.qualifyingDays.length;
+      
+      // If user reaches 30 days of at least 4 questions/day, grant Pro!
+      if (user.qualifyingDays.length >= 30) {
+        user.isPro = true;
+        if (!user.proUnlockedAt) {
+          user.proUnlockedAt = new Date().toISOString();
+        }
+      }
+    }
+
+    this.save();
+    return user;
+  }
+
+  toggleUserPro(userId, forceState) {
+    const user = this.getUserById(userId);
+    if (!user) return null;
+
+    if (typeof forceState === 'boolean') {
+      user.isPro = forceState;
+    } else {
+      user.isPro = !user.isPro;
+    }
+
+    if (user.isPro) {
+      if (!Array.isArray(user.qualifyingDays) || user.qualifyingDays.length < 30) {
+        // Pre-fill qualifying days for simulated 30-day streak
+        user.proStreak = 30;
+      }
+      if (!user.proUnlockedAt) {
+        user.proUnlockedAt = new Date().toISOString();
+      }
+    }
+
     this.save();
     return user;
   }

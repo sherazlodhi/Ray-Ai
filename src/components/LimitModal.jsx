@@ -1,11 +1,12 @@
 import React from 'react';
-import { X, AlertCircle, LogIn, Sparkles, Upload, Image as ImageIcon, Lock } from 'lucide-react';
+import { X, AlertCircle, LogIn, Sparkles, Upload, Image as ImageIcon, Lock, Crown } from 'lucide-react';
 
 export default function LimitModal({
   isOpen,
   onClose,
-  limitType, // 'questions' | 'create_image' | 'upload_image' | 'guest_image_upload' | 'guest_image_gen'
-  onOpenAuth
+  limitType, // 'questions' | 'create_image' | 'upload_image' | 'guest_image_upload' | 'guest_image_gen' | 'pro_required'
+  onOpenAuth,
+  onOpenProModal
 }) {
   if (!isOpen) return null;
 
@@ -145,12 +146,25 @@ export default function LimitModal({
               You have generated all <strong className="text-purple-400">5 allowed images for today</strong>! Your image creation limit resets every day at midnight. You can continue chatting and asking questions without limits!
             </p>
 
-            <button
-              onClick={onClose}
-              className="w-full py-2.5 px-4 bg-[#282a2c] hover:bg-[#333537] text-white rounded-xl text-sm font-semibold transition-all"
-            >
-              Got it
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenProModal?.();
+                }}
+                className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all"
+              >
+                <Crown className="w-4 h-4 text-black" />
+                <span>Earn Pro for Unlimited Images</span>
+              </button>
+
+              <button
+                onClick={onClose}
+                className="w-full py-2 px-4 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                Understood
+              </button>
+            </div>
           </>
         )}
 
@@ -169,12 +183,64 @@ export default function LimitModal({
               You have uploaded <strong className="text-teal-400">5 images today</strong>! Your image upload limit resets every day at midnight. You can continue asking questions and chatting with Ray without limits!
             </p>
 
-            <button
-              onClick={onClose}
-              className="w-full py-2.5 px-4 bg-[#282a2c] hover:bg-[#333537] text-white rounded-xl text-sm font-semibold transition-all"
-            >
-              Understood
-            </button>
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenProModal?.();
+                }}
+                className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all"
+              >
+                <Crown className="w-4 h-4 text-black" />
+                <span>Earn Pro for Unlimited Uploads</span>
+              </button>
+
+              <button
+                onClick={onClose}
+                className="w-full py-2 px-4 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                Understood
+              </button>
+            </div>
+          </>
+        )}
+
+        {/* 6. Ray Pro Membership Required (e.g. for AI Video) */}
+        {limitType === 'pro_required' && (
+          <>
+            <div className="w-12 h-12 mx-auto mb-3 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+              <Crown className="w-6 h-6" />
+            </div>
+
+            <h3 className="text-xl font-bold text-white mb-2 font-['Outfit']">
+              Ray Pro Membership Required
+            </h3>
+
+            <p className="text-sm text-gray-300 mb-5 leading-relaxed">
+              Generating dynamic <strong className="text-amber-400">AI Videos</strong> is an exclusive feature for <strong className="text-amber-400">Ray Pro members</strong>!
+              <br /><br />
+              Ask Ray at least <strong>4 questions every day for 30 days</strong> while signed in to unlock Ray Pro membership — completely free, with unlimited photo creation, uploads, and AI videos!
+            </p>
+
+            <div className="space-y-2">
+              <button
+                onClick={() => {
+                  onClose();
+                  onOpenProModal?.();
+                }}
+                className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 transition-all"
+              >
+                <Crown className="w-4 h-4 text-black" />
+                <span>View Pro Streak & Perks</span>
+              </button>
+
+              <button
+                onClick={onClose}
+                className="w-full py-2 px-4 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+              >
+                Maybe later
+              </button>
+            </div>
           </>
         )}
       </div>
