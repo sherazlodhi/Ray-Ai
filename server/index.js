@@ -762,12 +762,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const distPath = path.join(__dirname, '../dist');
 
-// Serve static frontend assets
-app.use(express.static(distPath));
+// Serve static frontend assets (HTML is never cached so updates load instantly)
+app.use(express.static(distPath, {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    }
+  }
+}));
 
 // Fallback to index.html for SPA routing
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.sendFile(path.join(distPath, 'index.html'));
 });
 
