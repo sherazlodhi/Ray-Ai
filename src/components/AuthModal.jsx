@@ -13,12 +13,14 @@ export default function AuthModal({
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
   const [copiedDev, setCopiedDev] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       setMode(initialMode || 'signin');
       setError('');
+      setSuccessMsg('');
       setLoading(false);
     }
   }, [isOpen, initialMode]);
@@ -62,8 +64,12 @@ export default function AuthModal({
         throw new Error(data.error || 'Authentication failed');
       }
 
+      setSuccessMsg(mode === 'signup' ? '✓ Account created successfully!' : '✓ Logged in successfully!');
       onAuthSuccess(data);
-      onClose();
+      setTimeout(() => {
+        onClose();
+        setSuccessMsg('');
+      }, 400);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -87,8 +93,12 @@ export default function AuthModal({
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Developer login failed');
 
+      setSuccessMsg('✓ Logged in as Dev Admin (VIP Pro)!');
       onAuthSuccess(data);
-      onClose();
+      setTimeout(() => {
+        onClose();
+        setSuccessMsg('');
+      }, 400);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -166,6 +176,13 @@ export default function AuthModal({
             ? 'Enter your email and desired new password to reset and sign in immediately.'
             : 'Sign in to unlock unlimited questions, save your conversations, and claim your VIP superpowers!'}
         </p>
+
+        {successMsg && (
+          <div className="mb-4 p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 text-xs font-semibold flex items-center gap-2 animate-fadeIn shadow-sm">
+            <Check className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+            <span>{successMsg}</span>
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-300 text-xs flex items-start gap-2">
