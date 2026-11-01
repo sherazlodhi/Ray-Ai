@@ -85,8 +85,13 @@ export default function ProModal({
             </div>
           </div>
 
+          <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-semibold mb-2">
+            <Crown className="w-3 h-3 text-amber-400" />
+            <span>VIP EXCLUSIVE AREA</span>
+          </div>
+
           <h2 className="text-2xl sm:text-3xl font-extrabold text-white font-['Outfit'] tracking-tight">
-            Ray AI <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">Pro Subscription</span>
+            Ray Intelligence <span className="bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500 bg-clip-text text-transparent">VIP Plan</span>
           </h2>
 
           <p className="text-xs sm:text-sm text-gray-400 mt-1 max-w-md">
@@ -148,57 +153,90 @@ export default function ProModal({
 
         {/* Pro Benefits Grid */}
         <div className="space-y-3 mb-6">
-          <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-1">
-            Pro Member Perks
+          <div className="flex items-center justify-between px-1">
+            <div className="text-xs font-bold text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+              <span>VIP Member Perks & Superpowers</span>
+            </div>
+            <span className="text-[10px] text-gray-400 bg-white/5 px-2 py-0.5 rounded-full border border-white/10">All-Inclusive</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            <div className="p-3 rounded-xl bg-[#252729] border border-[#383a3c] flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="p-3 rounded-xl bg-[#252729] border border-amber-500/20 hover:border-amber-500/40 transition-colors flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner">
                 <Video className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-gray-200">AI Video Generation</h4>
+                <h4 className="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+                  AI Video Generation <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-extrabold uppercase">VIP Exclusive</span>
+                </h4>
                 <p className="text-[11px] text-gray-400 leading-tight mt-0.5">
                   Generate cinematic 1080p AI videos from prompts with camera motion
                 </p>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#252729] border border-[#383a3c] flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="p-3 rounded-xl bg-[#252729] border border-purple-500/20 hover:border-purple-500/40 transition-colors flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner">
                 <ImageIcon className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-gray-200">Unlimited AI Photos</h4>
+                <h4 className="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+                  Unlimited AI Photos <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 font-extrabold uppercase">No Limits</span>
+                </h4>
                 <p className="text-[11px] text-gray-400 leading-tight mt-0.5">
                   Create infinite FLUX AI images without the daily 5-image cap
                 </p>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#252729] border border-[#383a3c] flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="p-3 rounded-xl bg-[#252729] border border-teal-500/20 hover:border-teal-500/40 transition-colors flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-teal-500/20 text-teal-400 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner">
                 <Upload className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-gray-200">Unlimited Photo Uploads</h4>
+                <h4 className="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+                  Unlimited Photo Uploads <span className="text-[9px] px-1.5 py-0.2 rounded bg-teal-500/20 text-teal-300 font-extrabold uppercase">Infinite</span>
+                </h4>
                 <p className="text-[11px] text-gray-400 leading-tight mt-0.5">
                   Upload and analyze unlimited photos with Ray Vision AI
                 </p>
               </div>
             </div>
 
-            <div className="p-3 rounded-xl bg-[#252729] border border-[#383a3c] flex items-start gap-3">
-              <div className="w-8 h-8 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="p-3 rounded-xl bg-[#252729] border border-yellow-500/20 hover:border-yellow-500/40 transition-colors flex items-start gap-3">
+              <div className="w-8 h-8 rounded-lg bg-yellow-500/20 text-yellow-400 flex items-center justify-center flex-shrink-0 mt-0.5 shadow-inner">
                 <Crown className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-gray-200">Pro Badge & Priority</h4>
+                <h4 className="text-xs font-bold text-gray-200 flex items-center gap-1.5">
+                  VIP Gold Crown & Priority <span className="text-[9px] px-1.5 py-0.2 rounded bg-yellow-500/20 text-yellow-300 font-extrabold uppercase">Fast Lane</span>
+                </h4>
                 <p className="text-[11px] text-gray-400 leading-tight mt-0.5">
                   Stand out with the gold crown badge on your account & chats
                 </p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Plan Comparison Summary */}
+        <div className="mb-6 p-3.5 rounded-2xl bg-[#161718] border border-white/5">
+          <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2 px-1">
+            Standard vs VIP Plan
+          </div>
+          <div className="space-y-1.5 text-xs">
+            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-[#1f2022]">
+              <span className="text-gray-300">Photo Creation</span>
+              <span className="text-gray-400">Standard: 5/day <span className="text-amber-400 font-bold ml-2">VIP: Unlimited ✨</span></span>
+            </div>
+            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-[#1f2022]">
+              <span className="text-gray-300">Photo Uploads</span>
+              <span className="text-gray-400">Standard: 5/day <span className="text-amber-400 font-bold ml-2">VIP: Unlimited ⚡</span></span>
+            </div>
+            <div className="flex items-center justify-between py-1 px-2 rounded-lg bg-[#1f2022]">
+              <span className="text-gray-300">AI Video Studio</span>
+              <span className="text-gray-400">Standard: Locked 🔒 <span className="text-amber-400 font-bold ml-2">VIP: Unlocked 🎬</span></span>
             </div>
           </div>
         </div>

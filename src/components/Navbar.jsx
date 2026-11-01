@@ -29,11 +29,28 @@ export default function Navbar({
         </button>
 
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium">
-            <Sparkles className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="font-semibold tracking-tight">Ray <span className="hidden xs:inline sm:inline">AI</span></span>
+          {/* Brand Badge */}
+          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-blue-500/10 border border-blue-500/25 text-blue-400 text-xs font-semibold shadow-sm">
+            <Sparkles className="w-3.5 h-3.5 flex-shrink-0 text-blue-400" />
+            <span className="tracking-tight whitespace-nowrap">
+              Ray <span className="hidden sm:inline">Intelligence</span><span className="sm:hidden">AI</span>
+            </span>
           </div>
 
+          {/* Tab to VIP Plan & Perks */}
+          <button
+            onClick={onOpenProModal}
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 hover:from-amber-500/25 hover:to-yellow-500/20 text-amber-300 hover:text-amber-200 border border-amber-500/35 hover:border-amber-400 text-xs font-semibold transition-all shadow-sm active:scale-95 group touch-manipulation min-h-[34px]"
+            title="Open VIP Plan & Explore Member Perks"
+          >
+            <Crown className="w-3.5 h-3.5 text-amber-400 fill-amber-400/20 group-hover:scale-110 transition-transform flex-shrink-0" />
+            <span className="font-semibold whitespace-nowrap">VIP Plan</span>
+            <span className="hidden md:inline-flex items-center text-[10px] px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-200 border border-amber-400/30 font-bold uppercase tracking-wider">
+              Perks
+            </span>
+          </button>
+
+          {/* New Chat Button */}
           <button
             onClick={onNewChat}
             className="flex items-center gap-1 sm:gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#282a2c] hover:bg-[#333537] text-gray-200 hover:text-white border border-[#3c4043] text-xs font-medium transition-all shadow-sm active:scale-95"
