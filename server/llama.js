@@ -128,20 +128,55 @@ function formatMessagesForOllama(systemPrompt, messages) {
 }
 
 /**
+ * Analyze an image with local Moondream vision if available
+ */
+async function analyzeImageWithVision(base64Image) {
+  if (!base64Image || typeof base64Image !== 'string') return null;
+  const cleanBase64 = base64Image.replace(/^data:image\/[a-zA-Z]+;base64,/, '');
+
+  try {
+    const res = await fetch('http://localhost:11434/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'moondream:latest',
+        messages: [{ role: 'user', content: 'Describe what you see in this image in 1 or 2 concise, clear sentences.', images: [cleanBase64] }],
+        stream: false,
+        options: { temperature: 0.2 }
+      }),
+      signal: AbortSignal.timeout(6000)
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const desc = data.message?.content?.trim();
+      if (desc) return desc;
+    }
+  } catch (err) {
+    // Graceful fallback if moondream isn't running or times out
+  }
+  return null;
+}
+
+/**
  * Format messages for OpenAI / Groq / OpenRouter LLaMA API
  */
-function formatMessagesForOpenAI(systemPrompt, messages) {
+function formatMessagesForOpenAI(systemPrompt, messages, visualDesc = null) {
   const formatted = [{ role: 'system', content: systemPrompt }];
 
-  for (const msg of messages) {
+  for (let i = 0; i < messages.length; i++) {
+    const msg = messages[i];
     const role = msg.role === 'model' || msg.role === 'assistant' ? 'assistant' : 'user';
 
     if (msg.images && Array.isArray(msg.images) && msg.images.length > 0) {
       const userText = (msg.content || '').trim();
       const imageCount = msg.images.length;
+      let imgDetails = `[User attached ${imageCount} photo/image attachment(s)]`;
+      if (visualDesc && i === messages.length - 1) {
+        imgDetails += `\n[Visual details of photo: "${visualDesc}"]`;
+      }
       const content = userText
-        ? `${userText}\n\n[User attached ${imageCount} photo/image attachment(s)]`
-        : `[User shared a photo/image with you. React warmly and enthusiastically to what they shared!]`;
+        ? `${userText}\n\n${imgDetails}`
+        : `[User shared a photo with you. ${visualDesc && i === messages.length - 1 ? `The photo shows: "${visualDesc}". ` : ''}React warmly and enthusiastically as Ray to what they shared!]`;
       formatted.push({ role, content });
     } else {
       formatted.push({ role, content: msg.content || '' });
@@ -155,6 +190,13 @@ function formatMessagesForOpenAI(systemPrompt, messages) {
  * Primary LLaMA response generator
  */
 export async function generateLlamaResponse({ messages, userTone, userName, deviceType = 'desktop' }) {
+  // If latest message has images, attempt quick visual perception
+  const lastMsg = messages[messages.length - 1];
+  let visualDesc = null;
+  if (lastMsg && lastMsg.role === 'user' && Array.isArray(lastMsg.images) && lastMsg.images.length > 0) {
+    visualDesc = await analyzeImageWithVision(lastMsg.images[0]);
+  }
+
   // Use the owner's Groq key for all users across the platform
   const apiKey = (process.env.GROQ_API_KEY || db.getApiKey() || '').trim();
   const systemPrompt = buildAdaptiveSystemPrompt(userTone?.toneTag || 'friendly', userName, deviceType);
@@ -179,7 +221,7 @@ export async function generateLlamaResponse({ messages, userTone, userName, devi
           },
           body: JSON.stringify({
             model: groqModel,
-            messages: formatMessagesForOpenAI(systemPrompt, messages),
+            messages: formatMessagesForOpenAI(systemPrompt, messages, visualDesc),
             temperature: 0.8,
             max_tokens: 2048
           })
