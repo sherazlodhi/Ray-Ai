@@ -15,7 +15,8 @@ import {
   X,
   Crown,
   Video,
-  Flame
+  Flame,
+  Terminal
 } from 'lucide-react';
 
 export default function Sidebar({
@@ -34,6 +35,7 @@ export default function Sidebar({
   onOpenImageGen,
   onOpenVideoGen,
   onOpenProModal,
+  onOpenDevControls,
   onLimitExceeded
 }) {
   const isAuth = !!user;
@@ -374,6 +376,15 @@ export default function Sidebar({
               <span>Sign In for Unlimited</span>
             </button>
           )}
+          {/* Dev Testing Controls Button */}
+          <button
+            onClick={onOpenDevControls}
+            className="w-full py-1.5 px-2.5 bg-[#17191b] hover:bg-[#202327] text-gray-400 hover:text-cyan-300 border border-[#2e3135] hover:border-cyan-500/40 rounded-xl text-[11px] font-mono flex items-center justify-center gap-1.5 transition-all active:scale-95"
+            title="Open Developer Testing Controls (Code Access)"
+          >
+            <Terminal className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Dev Testing Controls</span>
+          </button>
         </div>
       </aside>
     </>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Sparkles, Key, LogIn, LogOut, Heart, ShieldAlert, Cpu, Plus, Crown } from 'lucide-react';
+import { Menu, Sparkles, Key, LogIn, LogOut, Heart, ShieldAlert, Cpu, Plus, Crown, Terminal } from 'lucide-react';
 
 export default function Navbar({
   onToggleSidebar,
@@ -9,6 +9,7 @@ export default function Navbar({
   device,
   onOpenAuth,
   onOpenProModal,
+  onOpenDevControls,
   onNewChat,
   onLogout
 }) {
@@ -58,6 +59,16 @@ export default function Navbar({
           >
             <Plus className="w-3.5 h-3.5 text-blue-400" />
             <span>New Chat</span>
+          </button>
+
+          {/* Developer Testing Controls Button */}
+          <button
+            onClick={onOpenDevControls}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 hover:text-cyan-200 border border-cyan-500/30 hover:border-cyan-400 text-xs font-semibold transition-all shadow-sm active:scale-95 min-h-[34px]"
+            title="Open Developer Testing Controls (Access Code Required)"
+          >
+            <Terminal className="w-3.5 h-3.5 text-cyan-400 flex-shrink-0" />
+            <span className="hidden md:inline font-mono text-[11px]">Dev Controls</span>
           </button>
         </div>
       </div>

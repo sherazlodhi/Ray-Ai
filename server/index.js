@@ -642,6 +642,109 @@ app.post('/api/generate-video', async (req, res) => {
 });
 
 // -------------------------------------------------------------
+// Developer Testing Controls Endpoints
+// -------------------------------------------------------------
+const DEV_SECRET_CODES = ['raydev123', 'raydev', 'raydev2026', 'rayvip', 'ray'];
+
+app.post('/api/dev/verify-code', (req, res) => {
+  const code = (req.body?.code || '').trim();
+  const isValid = DEV_SECRET_CODES.some(c => c.toLowerCase() === code.toLowerCase());
+  if (!isValid) {
+    return res.status(401).json({ error: 'Invalid developer access code.' });
+  }
+  res.json({
+    success: true,
+    message: 'Developer mode authenticated.',
+    devAccount: {
+      email: 'dev@ray.ai',
+      password: 'raydev123'
+    }
+  });
+});
+
+app.post('/api/dev/override-quota', (req, res) => {
+  try {
+    const { code, questionsAsked, imagesCreated, imagesUploaded, videosCreated, isPro, streakDays } = req.body;
+    const isValid = DEV_SECRET_CODES.some(c => c.toLowerCase() === (code || '').trim().toLowerCase());
+    if (!isValid) {
+      return res.status(401).json({ error: 'Unauthorized. Invalid dev code.' });
+    }
+
+    const identity = getOwnerIdentity(req);
+    if (identity.isAuth && identity.user) {
+      const user = identity.user;
+      if (typeof questionsAsked === 'number') user.questionsAsked = questionsAsked;
+      if (typeof imagesCreated === 'number') user.imagesCreated = imagesCreated;
+      if (typeof imagesUploaded === 'number') user.imagesUploaded = imagesUploaded;
+      if (typeof videosCreated === 'number') user.videosCreated = videosCreated;
+      if (typeof isPro === 'boolean') user.isPro = isPro;
+      if (typeof streakDays === 'number') {
+        user.proStreak = streakDays;
+        user.qualifyingDays = Array.from({ length: streakDays }, (_, i) => `2026-10-${String(i + 1).padStart(2, '0')}`);
+        if (streakDays >= 30) user.isPro = true;
+      }
+      db.save();
+    } else {
+      // Guest override
+      const guest = db.getOrCreateGuest(identity.id);
+      if (guest) {
+        if (typeof questionsAsked === 'number') guest.questionsAsked = questionsAsked;
+        if (typeof imagesCreated === 'number') guest.imagesCreated = imagesCreated;
+        if (typeof imagesUploaded === 'number') guest.imagesUploaded = imagesUploaded;
+        if (typeof videosCreated === 'number') guest.videosCreated = videosCreated;
+        db.save();
+      }
+    }
+
+    const updatedIdentity = getOwnerIdentity(req);
+    res.json({
+      success: true,
+      userStats: buildUserStats(updatedIdentity)
+    });
+  } catch (err) {
+    console.error('Dev override error:', err);
+    res.status(500).json({ error: 'Failed to apply dev override.' });
+  }
+});
+
+app.post('/api/dev/reset-limits', (req, res) => {
+  try {
+    const { code } = req.body;
+    const isValid = DEV_SECRET_CODES.some(c => c.toLowerCase() === (code || '').trim().toLowerCase());
+    if (!isValid) {
+      return res.status(401).json({ error: 'Unauthorized. Invalid dev code.' });
+    }
+
+    const identity = getOwnerIdentity(req);
+    if (identity.isAuth && identity.user) {
+      identity.user.questionsAsked = 0;
+      identity.user.imagesCreated = 0;
+      identity.user.imagesUploaded = 0;
+      identity.user.videosCreated = 0;
+      db.save();
+    } else {
+      const guest = db.getOrCreateGuest(identity.id);
+      if (guest) {
+        guest.questionsAsked = 0;
+        guest.imagesCreated = 0;
+        guest.imagesUploaded = 0;
+        guest.videosCreated = 0;
+        db.save();
+      }
+    }
+
+    const updatedIdentity = getOwnerIdentity(req);
+    res.json({
+      success: true,
+      userStats: buildUserStats(updatedIdentity)
+    });
+  } catch (err) {
+    console.error('Dev reset limits error:', err);
+    res.status(500).json({ error: 'Failed to reset limits.' });
+  }
+});
+
+// -------------------------------------------------------------
 // Settings / API Key Management
 // -------------------------------------------------------------
 

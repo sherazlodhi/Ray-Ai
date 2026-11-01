@@ -8,6 +8,7 @@ import ImageGenModal from './components/ImageGenModal.jsx';
 import VideoGenModal from './components/VideoGenModal.jsx';
 import ProModal from './components/ProModal.jsx';
 import LimitModal from './components/LimitModal.jsx';
+import DevControlsModal from './components/DevControlsModal.jsx';
 import { renderCinematicVideoBlob } from './utils/videoRenderer.js';
 import { X } from 'lucide-react';
 import { useDevice } from './utils/useDevice.js';
@@ -60,6 +61,7 @@ export default function App() {
   const [videoGenModalOpen, setVideoGenModalOpen] = useState(false);
   const [proModalOpen, setProModalOpen] = useState(false);
   const [limitModal, setLimitModal] = useState({ open: false, type: 'questions' });
+  const [devControlsOpen, setDevControlsOpen] = useState(false);
   const [viewingImage, setViewingImage] = useState(null);
 
   // Build headers for requests
@@ -476,6 +478,7 @@ export default function App() {
         onOpenImageGen={() => setImageGenModalOpen(true)}
         onOpenVideoGen={() => (userStats?.isPro ? setVideoGenModalOpen(true) : setProModalOpen(true))}
         onOpenProModal={() => setProModalOpen(true)}
+        onOpenDevControls={() => setDevControlsOpen(true)}
         onLimitExceeded={(type) => setLimitModal({ open: true, type })}
       />
 
@@ -489,6 +492,7 @@ export default function App() {
           device={device}
           onOpenAuth={(mode) => setAuthModal({ open: true, mode })}
           onOpenProModal={() => setProModalOpen(true)}
+          onOpenDevControls={() => setDevControlsOpen(true)}
           onNewChat={handleNewChat}
           onLogout={handleLogout}
         />
@@ -602,6 +606,60 @@ export default function App() {
         onOpenProModal={() => {
           setLimitModal({ open: false, type: 'questions' });
           setProModalOpen(true);
+        }}
+      />
+
+      {/* Developer Testing Controls Modal */}
+      <DevControlsModal
+        isOpen={devControlsOpen}
+        onClose={() => setDevControlsOpen(false)}
+        userStats={userStats}
+        user={user}
+        currentChat={currentChat}
+        onUpdateVibe={(vibe) => setCurrentChat(prev => ({ ...prev, detectedVibe: vibe }))}
+        onStatsUpdated={(newStats) => setUserStats(newStats)}
+        onDevLogin={async () => {
+          try {
+            const res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: 'dev@ray.ai', password: 'raydev123' })
+            });
+            const data = await res.json();
+            if (res.ok) {
+              handleAuthSuccess(data);
+              setDevControlsOpen(false);
+            }
+          } catch (e) {
+            console.error('Dev switch error:', e);
+          }
+        }}
+        onDemoLogin={async () => {
+          try {
+            let res = await fetch('/api/auth/login', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email: 'friend@example.com', password: 'password123' })
+            });
+            if (!res.ok) {
+              res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: 'friend@example.com', password: 'password123', name: 'Friend' })
+              });
+            }
+            const data = await res.json();
+            if (res.ok) {
+              handleAuthSuccess(data);
+              setDevControlsOpen(false);
+            }
+          } catch (e) {
+            console.error('Demo switch error:', e);
+          }
+        }}
+        onLogout={() => {
+          handleLogout();
+          setDevControlsOpen(false);
         }}
       />
     </div>
