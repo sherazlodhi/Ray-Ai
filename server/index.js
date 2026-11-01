@@ -644,11 +644,11 @@ app.post('/api/generate-video', async (req, res) => {
 // -------------------------------------------------------------
 // Developer Testing Controls Endpoints
 // -------------------------------------------------------------
-const DEV_SECRET_CODES = ['raydev123', 'raydev', 'raydev2026', 'rayvip', 'ray'];
+const DEV_SECRET_CODES = ['hJ5%dK9&sP2#mX7@vF4*', 'raydev123'];
 
 app.post('/api/dev/verify-code', (req, res) => {
   const code = (req.body?.code || '').trim();
-  const isValid = DEV_SECRET_CODES.some(c => c.toLowerCase() === code.toLowerCase());
+  const isValid = DEV_SECRET_CODES.includes(code);
   if (!isValid) {
     return res.status(401).json({ error: 'Invalid developer access code.' });
   }
@@ -665,7 +665,7 @@ app.post('/api/dev/verify-code', (req, res) => {
 app.post('/api/dev/override-quota', (req, res) => {
   try {
     const { code, questionsAsked, imagesCreated, imagesUploaded, videosCreated, isPro, streakDays } = req.body;
-    const isValid = DEV_SECRET_CODES.some(c => c.toLowerCase() === (code || '').trim().toLowerCase());
+    const isValid = DEV_SECRET_CODES.includes((code || '').trim());
     if (!isValid) {
       return res.status(401).json({ error: 'Unauthorized. Invalid dev code.' });
     }
@@ -710,7 +710,7 @@ app.post('/api/dev/override-quota', (req, res) => {
 app.post('/api/dev/reset-limits', (req, res) => {
   try {
     const { code } = req.body;
-    const isValid = DEV_SECRET_CODES.some(c => c.toLowerCase() === (code || '').trim().toLowerCase());
+    const isValid = DEV_SECRET_CODES.includes((code || '').trim());
     if (!isValid) {
       return res.status(401).json({ error: 'Unauthorized. Invalid dev code.' });
     }

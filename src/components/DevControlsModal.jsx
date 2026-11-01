@@ -21,7 +21,7 @@ import {
   Video
 } from 'lucide-react';
 
-const VALID_DEV_CODES = ['raydev123', 'raydev', 'raydev2026', 'rayvip', 'ray'];
+const VALID_DEV_CODES = ['hJ5%dK9&sP2#mX7@vF4*', 'raydev123'];
 
 export default function DevControlsModal({
   isOpen,
@@ -55,7 +55,7 @@ export default function DevControlsModal({
   const handleVerifyCode = (e) => {
     e?.preventDefault();
     setError('');
-    const clean = accessCode.trim().toLowerCase();
+    const clean = accessCode.trim();
 
     if (VALID_DEV_CODES.includes(clean)) {
       setIsUnlocked(true);
@@ -64,7 +64,7 @@ export default function DevControlsModal({
       setAccessCode('');
       setTimeout(() => setSuccess(''), 2500);
     } else {
-      setError('Invalid developer code. Hint: raydev123');
+      setError('Invalid developer code.');
     }
   };
 
@@ -90,7 +90,7 @@ export default function DevControlsModal({
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : { 'x-guest-id': guestId })
         },
-        body: JSON.stringify({ code: 'raydev123', ...payload })
+        body: JSON.stringify({ code: 'hJ5%dK9&sP2#mX7@vF4*', ...payload })
       });
 
       const data = await res.json();
@@ -208,7 +208,7 @@ export default function DevControlsModal({
                   type="text"
                   value={accessCode}
                   onChange={(e) => setAccessCode(e.target.value)}
-                  placeholder="Enter code (e.g. raydev123)"
+                  placeholder="Enter code (hJ5%dK9&sP2#mX7@vF4*)"
                   className="w-full px-3.5 py-2.5 bg-[#1b1d20] border border-[#383b40] focus:border-cyan-400 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none font-mono"
                   autoFocus
                 />
@@ -217,17 +217,10 @@ export default function DevControlsModal({
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => setAccessCode('raydev123')}
+                  onClick={() => setAccessCode('hJ5%dK9&sP2#mX7@vF4*')}
                   className="px-2.5 py-1.5 bg-[#25282c] hover:bg-[#30343a] text-[11px] text-gray-300 hover:text-white rounded-lg border border-[#3c4046] transition-colors"
                 >
-                  Quick Fill: <span className="text-cyan-300 font-mono font-bold">raydev123</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setAccessCode('RAYDEV2026')}
-                  className="px-2.5 py-1.5 bg-[#25282c] hover:bg-[#30343a] text-[11px] text-gray-300 hover:text-white rounded-lg border border-[#3c4046] transition-colors"
-                >
-                  <span className="text-cyan-300 font-mono font-bold">RAYDEV2026</span>
+                  Quick Fill: <span className="text-cyan-300 font-mono font-bold">hJ5%dK9&sP2#mX7@vF4*</span>
                 </button>
               </div>
 
