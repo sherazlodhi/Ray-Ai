@@ -63,10 +63,11 @@ export default function App() {
   const [viewingImage, setViewingImage] = useState(null);
 
   // Build headers for requests
-  const getHeaders = useCallback(() => {
+  const getHeaders = useCallback((customToken) => {
     const headers = { 'Content-Type': 'application/json' };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+    const effectiveToken = customToken || token || localStorage.getItem('ray_auth_token') || localStorage.getItem('gemini_auth_token') || '';
+    if (effectiveToken) {
+      headers['Authorization'] = `Bearer ${effectiveToken}`;
     } else {
       headers['x-guest-id'] = guestId;
     }
@@ -74,30 +75,22 @@ export default function App() {
   }, [token, guestId]);
 
   // Load user status and usage stats
-  const fetchUserStatus = useCallback(async () => {
+  const fetchUserStatus = useCallback(async (customToken) => {
     try {
-      const res = await fetch('/api/user/status', { headers: getHeaders() });
+      const res = await fetch('/api/user/status', { headers: getHeaders(customToken) });
       if (res.ok) {
         const data = await res.json();
         setUserStats(data);
-        if (token && data && !data.isAuthenticated) {
-          // Token is invalid/expired on the server - synchronize local state
-          console.warn('Session expired or invalidated by server, clearing local auth');
-          setToken('');
-          setUser(null);
-          localStorage.removeItem('ray_auth_token');
-          localStorage.removeItem('ray_auth_user');
-        }
       }
     } catch (err) {
       console.error('Error fetching user status:', err);
     }
-  }, [getHeaders, token]);
+  }, [getHeaders]);
 
-  const loadChat = useCallback(async (id) => {
+  const loadChat = useCallback(async (id, customToken) => {
     try {
       setCurrentChatId(id);
-      const res = await fetch(`/api/chats/${id}`, { headers: getHeaders() });
+      const res = await fetch(`/api/chats/${id}`, { headers: getHeaders(customToken) });
       if (res.ok) {
         const data = await res.json();
         setCurrentChat(data.chat);
@@ -108,21 +101,45 @@ export default function App() {
   }, [getHeaders]);
 
   // Load chats (only auto-select first chat on very first page mount)
-  const fetchChats = useCallback(async (autoSelectFirst = false) => {
+  const fetchChats = useCallback(async (autoSelectFirst = false, customToken) => {
     try {
-      const res = await fetch('/api/chats', { headers: getHeaders() });
+      const res = await fetch('/api/chats', { headers: getHeaders(customToken) });
       if (res.ok) {
         const data = await res.json();
         const chatList = data.chats || [];
         setChats(chatList);
         if (autoSelectFirst && chatList.length > 0) {
-          loadChat(chatList[0].id);
+          loadChat(chatList[0].id, customToken);
         }
       }
     } catch (err) {
       console.error('Error fetching chats:', err);
     }
   }, [getHeaders, loadChat]);
+
+  // Verify saved token on mount
+  useEffect(() => {
+    const storedToken = localStorage.getItem('ray_auth_token') || localStorage.getItem('gemini_auth_token');
+    if (storedToken) {
+      fetch('/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${storedToken}` }
+      }).then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data.user);
+          setToken(storedToken);
+          if (data.userStats) setUserStats(data.userStats);
+        } else if (res.status === 401) {
+          console.warn('Auth token expired or invalid, reverting to guest');
+          setToken('');
+          setUser(null);
+          localStorage.removeItem('ray_auth_token');
+          localStorage.removeItem('ray_auth_user');
+          fetchUserStatus('');
+        }
+      }).catch(err => console.error('Error verifying token on mount:', err));
+    }
+  }, [fetchUserStatus]);
 
   useEffect(() => {
     fetchUserStatus();
@@ -413,13 +430,20 @@ export default function App() {
 
   // Auth Handlers
   const handleAuthSuccess = (data) => {
-    setToken(data.token);
-    setUser(data.user);
-    localStorage.setItem('ray_auth_token', data.token);
-    localStorage.setItem('ray_auth_user', JSON.stringify(data.user));
+    if (data.token) {
+      localStorage.setItem('ray_auth_token', data.token);
+      setToken(data.token);
+    }
+    if (data.user) {
+      localStorage.setItem('ray_auth_user', JSON.stringify(data.user));
+      setUser(data.user);
+    }
+    if (data.userStats) {
+      setUserStats(data.userStats);
+    }
     initialLoadDone.current = false;
-    fetchUserStatus();
-    fetchChats(true);
+    fetchUserStatus(data.token);
+    fetchChats(true, data.token);
   };
 
   const handleLogout = () => {

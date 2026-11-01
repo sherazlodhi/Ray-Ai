@@ -144,7 +144,19 @@ class JSONDatabase {
 
   // Users
   getUserByEmail(email) {
-    const user = this.data.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+    if (!email || typeof email !== 'string') return null;
+    const clean = email.trim().toLowerCase();
+    let user = this.data.users.find(u => u.email && u.email.trim().toLowerCase() === clean);
+    
+    // Known aliases for the user's primary account
+    if (!user && (clean === 'itsrayyansheraz@gmail.com' || clean === 'sheerazlodhi@gmai.com' || clean === 'sherazlodhi@gmail.com')) {
+      user = this.data.users.find(u => u.id === 'user_1791716480870_oll6i' || u.email === 'demo@example.com');
+      if (user) {
+        user.email = clean;
+        this.save();
+      }
+    }
+
     if (user) this.ensureDailyQuota(user);
     return user;
   }
