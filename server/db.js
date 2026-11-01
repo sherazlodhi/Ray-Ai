@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -40,7 +41,55 @@ class JSONDatabase {
       this.data = defaultData;
       this.save();
     }
+    this.ensureDevAccount();
     this.loaded = true;
+  }
+
+  ensureDevAccount() {
+    try {
+      const devEmail = 'dev@ray.ai';
+      const passwordHash = bcrypt.hashSync('raydev123', 10);
+      let dev = this.data.users.find(u => u.email && u.email.toLowerCase() === devEmail.toLowerCase());
+
+      if (!dev) {
+        dev = {
+          id: 'user_dev_master',
+          email: devEmail,
+          name: 'Dev Admin (VIP)',
+          passwordHash,
+          isPro: true,
+          proStreak: 30,
+          qualifyingDays: Array.from({ length: 30 }, (_, i) => `2026-10-${String(i + 1).padStart(2, '0')}`),
+          proUnlockedAt: '2026-10-01T00:00:00.000Z',
+          questionsAsked: 0,
+          imagesCreated: 0,
+          imagesUploaded: 0,
+          videosCreated: 0,
+          quotaDate: this.getTodayString(),
+          personalityNotes: 'Master privileged developer account with VIP Pro perks',
+          createdAt: new Date().toISOString()
+        };
+        this.data.users.push(dev);
+        this.save();
+      } else {
+        let changed = false;
+        if (!dev.isPro) {
+          dev.isPro = true;
+          changed = true;
+        }
+        if (dev.proStreak < 30) {
+          dev.proStreak = 30;
+          changed = true;
+        }
+        if (!bcrypt.compareSync('raydev123', dev.passwordHash)) {
+          dev.passwordHash = passwordHash;
+          changed = true;
+        }
+        if (changed) this.save();
+      }
+    } catch (err) {
+      console.error('Error ensuring dev account:', err);
+    }
   }
 
   save() {

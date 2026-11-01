@@ -15,7 +15,55 @@
       "email": "demo@example.com",
       "name": "Friend",
       "passwordHash": "$2a$10$9uRMhDoI1T7dyOkx1A3YVeL9JqA.4JsqOq3FOjEw96EaB2XzlSa4K",
-      "quotaDate": "2026-10-25"
+      "quotaDate": "2026-11-01"
+    },
+    {
+      "id": "user_dev_master",
+      "email": "dev@ray.ai",
+      "name": "Dev Admin (VIP)",
+      "passwordHash": "$2a$10$p6N.h43JzvQMKqk/Qm7dAul0FB.Ilg4FQDiH/yj9WuBxHowxaqIPu",
+      "isPro": true,
+      "proStreak": 30,
+      "qualifyingDays": [
+        "2026-10-01",
+        "2026-10-02",
+        "2026-10-03",
+        "2026-10-04",
+        "2026-10-05",
+        "2026-10-06",
+        "2026-10-07",
+        "2026-10-08",
+        "2026-10-09",
+        "2026-10-10",
+        "2026-10-11",
+        "2026-10-12",
+        "2026-10-13",
+        "2026-10-14",
+        "2026-10-15",
+        "2026-10-16",
+        "2026-10-17",
+        "2026-10-18",
+        "2026-10-19",
+        "2026-10-20",
+        "2026-10-21",
+        "2026-10-22",
+        "2026-10-23",
+        "2026-10-24",
+        "2026-10-25",
+        "2026-10-26",
+        "2026-10-27",
+        "2026-10-28",
+        "2026-10-29",
+        "2026-10-30"
+      ],
+      "proUnlockedAt": "2026-10-01T00:00:00.000Z",
+      "questionsAsked": 0,
+      "imagesCreated": 0,
+      "imagesUploaded": 0,
+      "videosCreated": 0,
+      "quotaDate": "2026-11-01",
+      "personalityNotes": "Master privileged developer account with VIP Pro perks",
+      "createdAt": "2026-11-01T14:26:10.257Z"
     }
   ],
   "guestSessions": {
@@ -78,10 +126,12 @@
     },
     "guest_default": {
       "id": "guest_default",
-      "questionsAsked": 4,
-      "imagesCreated": 1,
+      "questionsAsked": 0,
+      "imagesCreated": 0,
       "imagesUploaded": 0,
-      "createdAt": "2026-10-11T11:59:51.770Z"
+      "createdAt": "2026-10-11T11:59:51.770Z",
+      "quotaDate": "2026-11-01",
+      "videosCreated": 0
     },
     "guest_test_daily_1": {
       "id": "guest_test_daily_1",

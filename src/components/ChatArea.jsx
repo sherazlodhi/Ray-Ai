@@ -51,6 +51,7 @@ export default function ChatArea({
   onOpenImageGen,
   onOpenVideoGen,
   onOpenProModal,
+  onOpenUpload,
   userStats,
   user,
   onOpenAuth,
@@ -136,7 +137,7 @@ export default function ChatArea({
                       if (!isAuth) {
                         onLimitExceeded?.('guest_image_upload');
                       } else {
-                        onSelectSuggestion(item.title);
+                        onOpenUpload?.();
                       }
                     } else {
                       onSelectSuggestion(item.title);

@@ -40,6 +40,7 @@ export default function App() {
   const [currentChat, setCurrentChat] = useState({ messages: [], detectedVibe: 'Friendly & Casual ✨' });
   const [isGenerating, setIsGenerating] = useState(false);
   const initialLoadDone = useRef(false);
+  const inputBarRef = useRef(null);
 
   // Limits & Status
   const [userStats, setUserStats] = useState({
@@ -79,11 +80,19 @@ export default function App() {
       if (res.ok) {
         const data = await res.json();
         setUserStats(data);
+        if (token && data && !data.isAuthenticated) {
+          // Token is invalid/expired on the server - synchronize local state
+          console.warn('Session expired or invalidated by server, clearing local auth');
+          setToken('');
+          setUser(null);
+          localStorage.removeItem('ray_auth_token');
+          localStorage.removeItem('ray_auth_user');
+        }
       }
     } catch (err) {
       console.error('Error fetching user status:', err);
     }
-  }, [getHeaders]);
+  }, [getHeaders, token]);
 
   const loadChat = useCallback(async (id) => {
     try {
@@ -469,6 +478,7 @@ export default function App() {
           onOpenImageGen={() => setImageGenModalOpen(true)}
           onOpenVideoGen={() => (userStats?.isPro ? setVideoGenModalOpen(true) : setProModalOpen(true))}
           onOpenProModal={() => setProModalOpen(true)}
+          onOpenUpload={() => inputBarRef.current?.openFilePicker()}
           userStats={userStats}
           user={user}
           onOpenAuth={(mode) => setAuthModal({ open: true, mode })}
@@ -477,6 +487,8 @@ export default function App() {
         />
 
         <InputBar
+          ref={inputBarRef}
+          uploadRef={inputBarRef}
           onSendMessage={handleSendMessage}
           onOpenImageGen={() => setImageGenModalOpen(true)}
           onOpenVideoGen={() => (userStats?.isPro ? setVideoGenModalOpen(true) : setProModalOpen(true))}

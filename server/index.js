@@ -14,7 +14,8 @@ const JWT_SECRET = process.env.JWT_SECRET || 'gemini-friend-secret-token';
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '25mb' })); // Allow image base64 uploads
+app.use(express.json({ limit: '50mb' })); // Allow image base64 uploads
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Helper: extract authenticated user or null
 function getAuthUser(req) {
@@ -78,38 +79,45 @@ function getOwnerIdentity(req) {
 
 // Helper: build comprehensive user status & limits object
 function buildUserStats(identity) {
-  const isAuth = identity.isAuth;
-  const isPro = !!identity.isPro;
-  const proDaysCount = identity.proDaysCount || 0;
+  const user = identity.user || null;
+  const isAuth = !!identity.isAuth;
+  const qualifyingDays = Array.isArray(identity.qualifyingDays) ? identity.qualifyingDays : (Array.isArray(user?.qualifyingDays) ? user.qualifyingDays : []);
+  const isPro = !!(identity.isPro || user?.isPro || qualifyingDays.length >= 30);
+  const proDaysCount = isPro ? Math.max(30, qualifyingDays.length) : qualifyingDays.length;
+
+  const questionsAsked = identity.questionsAsked ?? user?.questionsAsked ?? 0;
+  const imagesCreated = identity.imagesCreated ?? user?.imagesCreated ?? 0;
+  const imagesUploaded = identity.imagesUploaded ?? user?.imagesUploaded ?? 0;
+  const videosCreated = identity.videosCreated ?? user?.videosCreated ?? 0;
 
   return {
     isAuthenticated: isAuth,
-    userName: identity.name,
+    userName: identity.name || user?.name || (isAuth ? 'User' : 'Guest'),
     isPro: isPro,
     proDaysCount: proDaysCount,
     proDaysTarget: 30,
-    proStreak: identity.proStreak || 0,
-    proUnlockedAt: identity.proUnlockedAt,
-    quotaDate: identity.quotaDate,
-    questionsAsked: identity.questionsAsked,
+    proStreak: isPro ? Math.max(30, identity.proStreak || user?.proStreak || 30) : (identity.proStreak || user?.proStreak || qualifyingDays.length),
+    proUnlockedAt: identity.proUnlockedAt || user?.proUnlockedAt || null,
+    quotaDate: identity.quotaDate || user?.quotaDate || db.getTodayString(),
+    questionsAsked,
     questionLimit: isAuth ? null : 4,
-    questionsRemaining: isAuth ? 'unlimited' : Math.max(0, 4 - identity.questionsAsked),
+    questionsRemaining: isAuth ? 'unlimited' : Math.max(0, 4 - questionsAsked),
 
     // Images: Pro members get unlimited creations & uploads!
     canCreateImages: isAuth,
     imageCreationLimit: isPro ? 'unlimited' : (isAuth ? 5 : 0),
-    imagesCreated: identity.imagesCreated,
-    imagesCreatedRemaining: isPro ? 'unlimited' : (isAuth ? Math.max(0, 5 - identity.imagesCreated) : 0),
+    imagesCreated,
+    imagesCreatedRemaining: isPro ? 'unlimited' : (isAuth ? Math.max(0, 5 - imagesCreated) : 0),
 
     canUploadImages: isAuth,
     imageUploadLimit: isPro ? 'unlimited' : (isAuth ? 5 : 0),
-    imagesUploaded: identity.imagesUploaded,
-    imagesUploadedRemaining: isPro ? 'unlimited' : (isAuth ? Math.max(0, 5 - identity.imagesUploaded) : 0),
+    imagesUploaded,
+    imagesUploadedRemaining: isPro ? 'unlimited' : (isAuth ? Math.max(0, 5 - imagesUploaded) : 0),
 
     // Videos: Exclusive to Pro members!
     canCreateVideos: isPro,
     videoCreationLimit: isPro ? 'unlimited' : 0,
-    videosCreated: identity.videosCreated || 0,
+    videosCreated,
     videosCreatedRemaining: isPro ? 'unlimited' : 0,
 
     resetsDaily: true
@@ -141,7 +149,7 @@ app.post('/api/auth/register', (req, res) => {
       passwordHash
     });
 
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '365d' });
 
     res.json({
       token,
@@ -181,7 +189,7 @@ app.post('/api/auth/login', (req, res) => {
       return res.status(401).json({ error: 'Invalid email or password.' });
     }
 
-    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '30d' });
+    const token = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET, { expiresIn: '365d' });
 
     res.json({
       token,
@@ -330,7 +338,7 @@ app.post('/api/chat', async (req, res) => {
     // Get or create chat
     let chat = chatId ? db.getChatById(chatId) : null;
     if (!chat) {
-      const title = message ? (message.length > 30 ? message.substring(0, 30) + '...' : message) : 'Image inquiry';
+      const title = message ? (message.length > 30 ? message.substring(0, 30) + '...' : message) : (newUploadCount > 0 ? '📷 Photo inquiry' : 'New chat');
       chat = db.createChat(identity.id, title);
     }
 
@@ -338,7 +346,7 @@ app.post('/api/chat', async (req, res) => {
     const userMsg = {
       id: 'msg_' + Date.now() + '_user',
       role: 'user',
-      content: message || '',
+      content: message ? message.trim() : (newUploadCount > 0 ? '📷 [Shared a photo]' : ''),
       images: images || [],
       timestamp: new Date().toISOString()
     };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Sparkles, LogIn, UserPlus, Zap } from 'lucide-react';
+import { X, Sparkles, LogIn, UserPlus, Zap, Crown, ShieldCheck, Check } from 'lucide-react';
 
 export default function AuthModal({
   isOpen,
@@ -13,6 +13,7 @@ export default function AuthModal({
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [copiedDev, setCopiedDev] = useState(false);
 
   if (!isOpen) return null;
 
@@ -35,6 +36,31 @@ export default function AuthModal({
       if (!res.ok) {
         throw new Error(data.error || 'Authentication failed');
       }
+
+      onAuthSuccess(data);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDevLogin = async () => {
+    setError('');
+    setLoading(true);
+    const devEmail = 'dev@ray.ai';
+    const devPassword = 'raydev123';
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: devEmail, password: devPassword })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Developer login failed');
 
       onAuthSuccess(data);
       onClose();
@@ -80,6 +106,14 @@ export default function AuthModal({
     }
   };
 
+  const fillDevCredentials = () => {
+    setMode('signin');
+    setEmail('dev@ray.ai');
+    setPassword('raydev123');
+    setCopiedDev(true);
+    setTimeout(() => setCopiedDev(false), 2000);
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-sm animate-fadeIn">
       <div className="bg-[#1e1f20] border border-[#383a3c] rounded-2xl w-full max-w-md p-5 sm:p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
@@ -109,15 +143,57 @@ export default function AuthModal({
           </div>
         )}
 
+        {/* 1. Privileged Developer Account Card */}
+        <div className="mb-4 p-3.5 bg-gradient-to-r from-amber-500/15 via-yellow-500/10 to-amber-500/15 border border-amber-500/40 rounded-2xl shadow-lg shadow-amber-500/5">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-amber-300">
+              <Crown className="w-4 h-4 text-amber-400" />
+              <span>Privileged Developer Account</span>
+            </div>
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/25 text-amber-200 font-bold border border-amber-500/40">
+              PRO VIP
+            </span>
+          </div>
+
+          <p className="text-[11px] text-gray-300 mb-2.5 leading-relaxed">
+            Pre-loaded with all privileged permissions: <strong className="text-amber-300">Unlimited Photos</strong>, <strong className="text-amber-300">Unlimited Uploads</strong>, <strong className="text-amber-300">AI Video Studio</strong>, & unlimited questions.
+          </p>
+
+          <div className="bg-[#141517] p-2.5 rounded-xl text-[11px] font-mono mb-2.5 border border-[#333537] flex items-center justify-between">
+            <div className="space-y-0.5">
+              <div className="text-gray-400">Email: <span className="text-amber-300 font-semibold select-all">dev@ray.ai</span></div>
+              <div className="text-gray-400">Pass: <span className="text-amber-300 font-semibold select-all">raydev123</span></div>
+            </div>
+            <button
+              type="button"
+              onClick={fillDevCredentials}
+              className="px-2.5 py-1 bg-[#242628] hover:bg-[#303236] text-[10px] text-gray-300 hover:text-white rounded-lg border border-[#444] transition-colors"
+              title="Auto-fill into the form below"
+            >
+              {copiedDev ? 'Filled! ✓' : 'Auto-fill'}
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={handleDevLogin}
+            disabled={loading}
+            className="w-full py-2.5 px-4 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black rounded-xl text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-amber-500/25 active:scale-[0.98] transition-all min-h-[40px] touch-manipulation"
+          >
+            <Crown className="w-4 h-4 text-black fill-black" />
+            <span>1-Click Log In as Dev (Privileged Pro)</span>
+          </button>
+        </div>
+
         {/* 1-Click Demo Login Button */}
         <button
           type="button"
           onClick={handleDemoLogin}
           disabled={loading}
-          className="w-full mb-4 py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 active:scale-[0.98] transition-all min-h-[40px] touch-manipulation"
+          className="w-full mb-4 py-2 px-4 bg-[#252729] hover:bg-[#2f3235] text-gray-300 hover:text-white border border-[#3c4043] rounded-xl text-xs font-medium flex items-center justify-center gap-2 active:scale-[0.98] transition-all min-h-[38px] touch-manipulation"
         >
-          <Zap className="w-4 h-4" />
-          <span>1-Click Instant Demo Login (Unlimited Questions)</span>
+          <Zap className="w-3.5 h-3.5 text-teal-400" />
+          <span>1-Click Standard Demo Login</span>
         </button>
 
         <div className="relative flex py-2 items-center mb-4">
